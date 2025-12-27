@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum LocationType {
+  LANDMARK
+  BUS_STOP
+  AREA
+  OTHER
+}
+
+enum VehicleType {
+  SHARED_AUTO
+  BUS
+  MINI_BUS
+  E_RICKSHAW
+  OTHER
+}
+
+enum RouteStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String?
+  phone        String        @unique
+  role         UserRole      @default(USER)
+  submissions  Submission[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Location {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  type        LocationType
+  lat         Float?
+  lng         Float?
+  routesFrom  Route[]     @relation("RouteFrom")
+  routesTo    Route[]     @relation("RouteTo")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Route {
+  id              String          @id @default(cuid())
+  fromLocationId  String
+  toLocationId    String
+  fromLocation    Location        @relation("RouteFrom", fields: [fromLocationId], references: [id])
+  toLocation      Location        @relation("RouteTo", fields: [toLocationId], references: [id])
+  vehicleType     VehicleType
+  autoColor       String?
+  via             Json?           // Array of via points { name, lat, lng }
+  status          RouteStatus     @default(PENDING)
+  fares           Fare[]
+  submissions     Submission[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model Fare {
+  id        String   @id @default(cuid())
+  routeId   String
+  route     Route    @relation(fields: [routeId], references: [id])
+  minFare   Int
+  maxFare   Int
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Submission {
+  id        String           @id @default(cuid())
+  status    SubmissionStatus @default(PENDING)
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+  routeId   String
+  route     Route            @relation(fields: [routeId], references: [id])
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
