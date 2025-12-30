@@ -16,8 +16,9 @@ export default function LoginPage() {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
 
-  const handleLogin = async () => {
+  const handleSendOtp = async () => {
     if (!phone.trim()) {
       alert("Please enter your mobile number.");
       return;
@@ -25,7 +26,31 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const response = await loginRequest(phone, otp || undefined);
+      // Send OTP (mock - just call login without OTP to trigger OTP generation)
+      await loginRequest(phone);
+      setOtpSent(true);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send OTP. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogin = async () => {
+    if (!phone.trim()) {
+      alert("Please enter your mobile number.");
+      return;
+    }
+
+    if (!otp.trim()) {
+      alert("Please enter the OTP.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await loginRequest(phone, otp);
       const data = response.data as {
         token: string;
         user: { id: string; phone: string; role: string; name?: string | null };
@@ -71,15 +96,22 @@ export default function LoginPage() {
             placeholder="Any 4-6 digit code (mocked)"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
+            disabled={!otpSent}
           />
           <p className="text-[10px] text-slate-400">
             OTP is not actually validated in this demo. Any value will work.
           </p>
         </div>
 
-        <Button className="w-full" onClick={handleLogin} disabled={loading}>
-          {loading ? "Logging in…" : "Login"}
-        </Button>
+        {!otpSent ? (
+          <Button className="w-full" onClick={handleSendOtp} disabled={loading}>
+            {loading ? "Sending OTP…" : "Send OTP"}
+          </Button>
+        ) : (
+          <Button className="w-full" onClick={handleLogin} disabled={loading}>
+            {loading ? "Logging in…" : "Login"}
+          </Button>
+        )}
       </Card>
     </main>
   );
