@@ -13,8 +13,69 @@ import { validateRouteCandidate } from "../services/ai/routeValidation";
 
 export const routesRouter = Router();
 
+// GET /search - dedicated search endpoint for frontend
+routesRouter.get(
+  "/search",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { from, to } = parseQuery(routeSearchSchema, req.query);
+
+      const [fromNorm, toNorm] = await Promise.all([
+        normalizePlaceName(from),
+        normalizePlaceName(to),
+      ]);
+
+      const [fromLocations, toLocations] = await Promise.all([
+        prisma.location.findMany({
+          where: {
+            name: {
+              contains: fromNorm.normalized,
+              mode: "insensitive",
+            },
+          },
+        }),
+        prisma.location.findMany({
+          where: {
+            name: {
+              contains: toNorm.normalized,
+              mode: "insensitive",
+            },
+          },
+        }),
+      ]);
+
+      if (!fromLocations.length || !toLocations.length) {
+        return res.json({ routes: [] });
+      }
+
+      const fromIds = fromLocations.map((l: any) => l.id);
+      const toIds = toLocations.map((l: any) => l.id);
+
+      const routes = (await prisma.route.findMany({
+        where: {
+          fromLocationId: { in: fromIds },
+          toLocationId: { in: toIds },
+          status: "APPROVED",
+        },
+        include: {
+          fromLocation: true,
+          toLocation: true,
+          fares: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      })) as RouteWithRelations[];
+
+      return res.json({ routes: routes.map(mapRouteToDTO) });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
 // GET /routes?from=&to=
-// Public search endpoint used by the frontend to find approved routes between
+// Public search endpoint used by frontend to find approved routes between
 // two locations. It performs a simple name-based search and returns route DTOs.
 routesRouter.get(
   "/",

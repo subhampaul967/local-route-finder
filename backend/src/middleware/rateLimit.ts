@@ -15,3 +15,6 @@ export const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+// Default export for use in app.ts
+export const rateLimitMiddleware = generalLimiter;
