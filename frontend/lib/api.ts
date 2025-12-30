@@ -16,11 +16,11 @@ export const setAuthToken = (token: string | null) => {
 };
 
 export const loginRequest = (phone: string, otp?: string) => {
-  return api.post("/auth/login", { phone, otp });
+  return api.post("/api/auth/login", { phone, otp });
 };
 
 export const searchRoutes = (from: string, to: string) => {
-  return api.get("/routes", { params: { from, to } });
+  return api.get("/api/routes/search", { params: { from, to } });
 };
 
 export interface SubmitRoutePayload {
@@ -37,19 +37,19 @@ export interface SubmitRoutePayload {
 }
 
 export const submitRoute = (payload: SubmitRoutePayload) => {
-  return api.post("/routes", payload);
+  return api.post("/api/routes", payload);
 };
 
 export const fetchPendingRoutes = () => {
-  return api.get("/routes/pending");
+  return api.get("/api/routes/pending");
 };
 
 export const approveRoute = (id: string) => {
-  return api.patch(`/routes/${id}/approve`);
+  return api.patch(`/api/routes/${id}/approve`);
 };
 
 export const rejectRoute = (id: string) => {
-  return api.patch(`/routes/${id}/reject`);
+  return api.patch(`/api/routes/${id}/reject`);
 };
 
 export const upsertFare = (data: {
@@ -59,5 +59,5 @@ export const upsertFare = (data: {
   maxFare: number;
   notes?: string;
 }) => {
-  return api.post("/fares", data);
+  return api.post("/api/fares", data);
 };
