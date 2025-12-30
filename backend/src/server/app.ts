@@ -49,3 +49,5 @@ app.use("/fares", faresRouter);
 // 404 + error handlers
 app.use(notFoundHandler);
 app.use(errorHandler);
+
+export { app };
