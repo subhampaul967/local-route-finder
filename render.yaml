@@ -1,0 +1,11 @@
+services:
+  - name: local-route-finder-backend
+    type: web
+    env: node
+    root: backend
+    buildCommand: npm run build --workspace backend
+    startCommand: npm run start --workspace backend
+    cache:
+      - node_modules
+      - ~/.npm
+      - backend/dist
