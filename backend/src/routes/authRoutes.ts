@@ -6,6 +6,29 @@ import { env } from "../config/env";
 
 export const authRouter = Router();
 
+// Temporary endpoint to create admin user (REMOVE IN PRODUCTION)
+authRouter.post("/create-admin", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { phone } = req.body;
+    if (!phone) {
+      return res.status(400).json({ error: "Phone is required" });
+    }
+
+    const user = await prisma.user.upsert({
+      where: { phone },
+      update: { role: "ADMIN" },
+      create: {
+        phone,
+        role: "ADMIN",
+      },
+    });
+
+    return res.json({ message: "Admin user created", user });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 // Mock OTP login endpoint.
 // In production you would integrate with an SMS provider and verify the OTP.
 authRouter.post("/login", async (req: Request, res: Response, next: NextFunction) => {
