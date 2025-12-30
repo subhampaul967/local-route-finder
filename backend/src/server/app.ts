@@ -16,12 +16,14 @@ app.disable("x-powered-by");
 app.use(helmet());
 
 // CORS configuration to allow the Next.js frontend origin
-app.use(
-  cors({
-    origin: env.corsOrigin,
-    credentials: true,
-  })
-);
+// In development, reflect the request origin to support multiple dev ports
+// (Next.js may run on 3000/3001/3002). In production, use configured origin.
+const corsOptions =
+  env.nodeEnv === "development"
+    ? { origin: true, credentials: true }
+    : { origin: env.corsOrigin, credentials: true };
+
+app.use(cors(corsOptions));
 
 // Logging
 app.use(morgan(env.nodeEnv === "development" ? "dev" : "combined"));

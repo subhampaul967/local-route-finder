@@ -23,8 +23,8 @@ const RouteMap = dynamic(
 
 function ResultsContent() {
   const searchParams = useSearchParams();
-  const from = searchParams.get("from") ?? "";
-  const to = searchParams.get("to") ?? "";
+  const from = searchParams?.get("from") ?? "";
+  const to = searchParams?.get("to") ?? "";
 
   const [routes, setRoutes] = useState<RouteDTO[] | null>(null);
   const [loading, setLoading] = useState(false);
