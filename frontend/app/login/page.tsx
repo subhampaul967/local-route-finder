@@ -96,22 +96,15 @@ export default function LoginPage() {
             placeholder="Any 4-6 digit code (mocked)"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
-            disabled={!otpSent}
           />
           <p className="text-[10px] text-slate-400">
             OTP is not actually validated in this demo. Any value will work.
           </p>
         </div>
 
-        {!otpSent ? (
-          <Button className="w-full" onClick={handleSendOtp} disabled={loading}>
-            {loading ? "Sending OTP…" : "Send OTP"}
-          </Button>
-        ) : (
-          <Button className="w-full" onClick={handleLogin} disabled={loading}>
-            {loading ? "Logging in…" : "Login"}
-          </Button>
-        )}
+        <Button className="w-full" onClick={handleLogin} disabled={loading}>
+          {loading ? "Logging in…" : "Login"}
+        </Button>
       </Card>
     </main>
   );
