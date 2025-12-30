@@ -19,10 +19,12 @@ exports.app = (0, express_1.default)();
 exports.app.disable("x-powered-by");
 exports.app.use((0, helmet_1.default)());
 // CORS configuration to allow the Next.js frontend origin
-exports.app.use((0, cors_1.default)({
-    origin: env_1.env.corsOrigin,
-    credentials: true,
-}));
+// In development, reflect the request origin to support multiple dev ports
+// (Next.js may run on 3000/3001/3002). In production, use configured origin.
+const corsOptions = env_1.env.nodeEnv === "development"
+    ? { origin: true, credentials: true }
+    : { origin: env_1.env.corsOrigin, credentials: true };
+exports.app.use((0, cors_1.default)(corsOptions));
 // Logging
 exports.app.use((0, morgan_1.default)(env_1.env.nodeEnv === "development" ? "dev" : "combined"));
 // Body parsing with sensible limits for a small JSON API
