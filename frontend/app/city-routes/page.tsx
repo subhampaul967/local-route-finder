@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { CitySelector } from '@/components/CitySelector';
-import { MapboxRouteMap } from "@/components/map/MapboxRouteMap";
+import { GoogleRouteMap } from "@/components/map/GoogleRouteMap";
 import type { RouteDTO } from "@local/shared";
 
 interface Route {
@@ -123,7 +123,7 @@ function CityRoutesContent() {
 
       {showMap && routes.length > 0 && (
         <div className="mt-4">
-          <MapboxRouteMap routes={routes as RouteDTO[]} />
+          <GoogleRouteMap routes={routes as RouteDTO[]} />
         </div>
       )}
 
