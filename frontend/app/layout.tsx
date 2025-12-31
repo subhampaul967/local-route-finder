@@ -1,16 +1,6 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import AppShellWrapper from "@/components/layout/AppShellWrapper";
 import "./globals.css";
-
-// Load AppShell as a client-only component to avoid SSR/client hydration
-// mismatches for UI that depends on browser APIs (online status, service
-// worker registration, etc.).
-const AppShell = dynamic(
-  () => import("@/components/layout/AppShell").then((mod) => mod.AppShell),
-  {
-    ssr: false,
-  }
-);
 
 export const metadata: Metadata = {
   title: "Local Bus & Shared Auto Finder",
@@ -34,7 +24,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
-        <AppShell>{children}</AppShell>
+        <AppShellWrapper>{children}</AppShellWrapper>
       </body>
     </html>
   );
