@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { SearchForm } from "@/components/search/SearchForm";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { CitySelector } from "@/components/CitySelector";
 
 export default function HomePage() {
   const router = useRouter();
@@ -25,6 +26,10 @@ export default function HomePage() {
       setSelectedCity(city);
     }
   }, [selectedCity]);
+
+  const handleCityChange = (city: string) => {
+    setSelectedCity(city);
+  };
 
   // Simple client-side validation before navigating to results page.
   const handleSubmit = () => {
@@ -75,6 +80,15 @@ export default function HomePage() {
           showSubmitButton
         />
       </Card>
+
+      {selectedCity && (
+        <div className="text-center">
+          <CitySelector 
+            currentCity={selectedCity} 
+            onCityChange={handleCityChange}
+          />
+        </div>
+      )}
 
       {selectedCity && (
         <div className="text-center">

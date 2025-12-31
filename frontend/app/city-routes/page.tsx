@@ -6,6 +6,7 @@ import { getCityRoutes } from '@/lib/api';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { CitySelector } from '@/components/CitySelector';
 
 interface Route {
   id: string;
@@ -22,6 +23,13 @@ export default function CityRoutesPage() {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [currentCity, setCurrentCity] = useState(city);
+
+  const handleCityChange = (newCity: string) => {
+    setCurrentCity(newCity);
+    // Navigate to the new city routes
+    window.location.href = `/city-routes?city=${encodeURIComponent(newCity)}`;
+  };
 
   useEffect(() => {
     const fetchRoutes = async () => {
@@ -66,13 +74,19 @@ export default function CityRoutesPage() {
   return (
     <main className="mx-auto flex max-w-4xl flex-1 flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-brand-foreground">
-            All Routes in {city}
-          </h1>
-          <p className="text-sm text-slate-400">
-            {routes.length} routes found
-          </p>
+        <div className="flex items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-brand-foreground">
+              All Routes in {city}
+            </h1>
+            <p className="text-sm text-slate-400">
+              {routes.length} routes found
+            </p>
+          </div>
+          <CitySelector 
+            currentCity={currentCity} 
+            onCityChange={handleCityChange}
+          />
         </div>
         <Link href="/">
           <Button variant="outline" className="border-blue-500 text-blue-400 hover:bg-blue-500/10">
