@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getCityRoutes } from '@/lib/api';
 import { Card } from '@/components/ui/card';
@@ -19,7 +19,7 @@ interface Route {
   fares: Array<{ minFare: number; maxFare: number; notes?: string }>;
 }
 
-export default function CityRoutesPage() {
+function CityRoutesContent() {
   const searchParams = useSearchParams();
   const city = searchParams?.get('city') || 'Kolkata';
   const [routes, setRoutes] = useState<Route[]>([]);
@@ -182,5 +182,19 @@ export default function CityRoutesPage() {
         </div>
       )}
     </main>
+  );
+}
+
+export default function CityRoutesPage() {
+  return (
+    <Suspense fallback={
+      <main className="mx-auto flex max-w-4xl flex-1 flex-col gap-4 px-4 py-6">
+        <div className="text-center">
+          <div className="text-lg">Loading...</div>
+        </div>
+      </main>
+    }>
+      <CityRoutesContent />
+    </Suspense>
   );
 }
