@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { SearchForm } from "@/components/search/SearchForm";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function HomePage() {
   const router = useRouter();
@@ -26,6 +27,14 @@ export default function HomePage() {
 
     const params = new URLSearchParams({ from, to });
     router.push(`/results?${params.toString()}`);
+  };
+
+  const handleViewAllRoutes = () => {
+    if (!selectedCity) {
+      alert("Please select a city first to view all routes.");
+      return;
+    }
+    router.push(`/city-routes?city=${encodeURIComponent(selectedCity)}`);
   };
 
   return (
@@ -58,6 +67,18 @@ export default function HomePage() {
           showSubmitButton
         />
       </Card>
+
+      {selectedCity && (
+        <div className="text-center">
+          <Button 
+            variant="outline" 
+            onClick={handleViewAllRoutes}
+            className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
+          >
+            🚌 View All Routes in {selectedCity}
+          </Button>
+        </div>
+      )}
     </main>
   );
 }

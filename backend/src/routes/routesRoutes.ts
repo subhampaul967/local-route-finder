@@ -13,6 +13,64 @@ import { validateRouteCandidate } from "../services/ai/routeValidation";
 
 export const routesRouter = Router();
 
+// GET /city - get all routes in selected city
+routesRouter.get(
+  "/city",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Get city from query parameter (default to Kolkata if not provided)
+      const city = (req.query.city as string) || "Kolkata";
+
+      // Find locations in the selected city
+      const cityLocations = await prisma.location.findMany({
+        where: {
+          name: {
+            contains: city,
+            mode: "insensitive",
+          },
+        },
+      });
+
+      if (!cityLocations.length) {
+        return res.json({ routes: [], city, message: `No locations found for ${city}` });
+      }
+
+      const locationIds = cityLocations.map((l: any) => l.id);
+
+      // Get all routes (both from and to locations in the city)
+      const routes = (await prisma.route.findMany({
+        where: {
+          OR: [
+            {
+              fromLocationId: { in: locationIds },
+            },
+            {
+              toLocationId: { in: locationIds },
+            },
+          ],
+          status: "APPROVED",
+        },
+        include: {
+          fromLocation: true,
+          toLocation: true,
+          fares: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      })) as RouteWithRelations[];
+
+      return res.json({ 
+        routes: routes.map(mapRouteToDTO), 
+        city,
+        totalRoutes: routes.length 
+      });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
 // GET /search - dedicated search endpoint for frontend
 routesRouter.get(
   "/search",

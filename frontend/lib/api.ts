@@ -23,6 +23,10 @@ export const searchRoutes = (from: string, to: string) => {
   return api.get("/api/routes/search", { params: { from, to } });
 };
 
+export const getCityRoutes = (city: string) => {
+  return api.get("/api/routes/city", { params: { city } });
+};
+
 export interface SubmitRoutePayload {
   fromLocationId?: string;
   toLocationId?: string;
