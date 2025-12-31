@@ -28,7 +28,6 @@ export const getCityRoutes = (city: string) => {
 };
 
 export const getAllAdminRoutes = () => {
-  console.log('Making request to /api/routes/admin/all');
   return api.get("/api/routes/admin/all");
 };
 

@@ -29,9 +29,7 @@ export default function AdminRoutesPage() {
     const fetchRoutes = async () => {
       try {
         setLoading(true);
-        console.log('Fetching admin routes...');
         const response = await getAllAdminRoutes();
-        console.log('Admin routes response:', response);
         setRoutes(response.data.routes);
       } catch (err) {
         console.error('Error fetching admin routes:', err);

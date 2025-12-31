@@ -7,6 +7,20 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { CitySelector } from '@/components/CitySelector';
+import dynamic from 'next/dynamic';
+import type { RouteDTO } from "@local/shared";
+
+const RouteMap = dynamic(
+  () => import("@/components/map/RouteMap").then((m) => m.RouteMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="mt-3 h-64 rounded-lg bg-slate-900/60 p-4 text-sm text-slate-300">
+        Loading map…
+      </div>
+    ),
+  }
+);
 
 interface Route {
   id: string;
@@ -24,6 +38,7 @@ export default function CityRoutesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentCity, setCurrentCity] = useState(city);
+  const [showMap, setShowMap] = useState(false);
 
   const handleCityChange = (newCity: string) => {
     setCurrentCity(newCity);
@@ -88,12 +103,30 @@ export default function CityRoutesPage() {
             onCityChange={handleCityChange}
           />
         </div>
-        <Link href="/">
-          <Button variant="outline" className="border-blue-500 text-blue-400 hover:bg-blue-500/10">
-            ← Back to Home
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/">
+            <Button variant="outline" className="border-blue-500 text-blue-400 hover:bg-blue-500/10">
+              ← Back to Home
+            </Button>
+          </Link>
+          {routes.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowMap((v) => !v)}
+              className="border-green-500 text-green-400 hover:bg-green-500/10"
+            >
+              {showMap ? "Hide Map" : "Show Map"}
+            </Button>
+          )}
+        </div>
       </div>
+
+      {showMap && routes.length > 0 && (
+        <div className="mt-4">
+          <RouteMap routes={routes as RouteDTO[]} />
+        </div>
+      )}
 
       {routes.length === 0 ? (
         <Card className="p-8 text-center bg-slate-900/60">

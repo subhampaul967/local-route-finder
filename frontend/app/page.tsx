@@ -20,7 +20,6 @@ export default function HomePage() {
   useEffect(() => {
     const city = localStorage.getItem('selectedCity') || "";
     setSelectedCity(city);
-    console.log('City loaded from localStorage:', city);
   }, []);
 
   // Also check localStorage on every render (in case it's set after login)
@@ -28,7 +27,6 @@ export default function HomePage() {
     const city = localStorage.getItem('selectedCity') || "";
     if (city !== selectedCity) {
       setSelectedCity(city);
-      console.log('City updated:', city);
     }
   });
 
@@ -104,10 +102,6 @@ export default function HomePage() {
           >
             🚌 View All Routes in {selectedCity}
           </Button>
-          {/* Debug info - remove later */}
-          <div className="text-xs text-slate-500 mt-2">
-            Debug: City = "{selectedCity}"
-          </div>
         </div>
       )}
 
@@ -124,25 +118,6 @@ export default function HomePage() {
           </Link>
         </div>
       )}
-
-      {/* Always show this for debugging */}
-      <div className="text-center">
-        <div className="text-xs text-slate-500">
-          localStorage city = "{localStorage.getItem('selectedCity') || 'null'}"
-        </div>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => {
-            localStorage.setItem('selectedCity', 'Durgapur');
-            setSelectedCity('Durgapur');
-            window.location.reload();
-          }}
-          className="mt-2 text-xs"
-        >
-          Force set Durgapur
-        </Button>
-      </div>
     </main>
   );
 }
