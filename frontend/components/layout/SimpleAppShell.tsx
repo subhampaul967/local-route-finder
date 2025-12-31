@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect } from "react";
-import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -11,8 +10,23 @@ export const SimpleAppShell = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const online = useOnlineStatus();
   const { user, logout } = useAuthStore();
+  const [online, setOnline] = useState(true);
+
+  useEffect(() => {
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    setOnline(navigator.onLine);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Register a very small service worker for PWA/offline support.
   useEffect(() => {
