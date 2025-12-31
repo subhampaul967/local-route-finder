@@ -5,11 +5,6 @@ export const metadata: Metadata = {
   title: "Local Bus & Shared Auto Finder",
   description:
     "Community-sourced local transport wiki for shared autos and private buses in Indian towns.",
-  manifest: "/manifest.json",
-};
-
-export const viewport = {
-  themeColor: "#0f766e",
 };
 
 export default function RootLayout({
@@ -19,10 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </head>
-      <body className="bg-slate-950 text-slate-100">
+      <body style={{ margin: 0, padding: 0, backgroundColor: '#0f172a', color: '#f1f5f9' }}>
         {children}
       </body>
     </html>
