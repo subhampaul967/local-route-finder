@@ -382,6 +382,8 @@ routesRouter.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
+      console.log('DELETE route request for ID:', id);
+      console.log('User:', (req as any).user);
 
       // First check if route exists
       const route = await prisma.route.findUnique({
@@ -394,19 +396,25 @@ routesRouter.delete(
       });
 
       if (!route) {
+        console.log('Route not found:', id);
         return res.status(404).json({ error: "Route not found" });
       }
+
+      console.log('Found route to delete:', route.fromLocation.name, '→', route.toLocation.name);
 
       // Delete the route (fares will be deleted due to cascade)
       await prisma.route.delete({
         where: { id },
       });
 
+      console.log('Route deleted successfully:', id);
+
       return res.json({ 
         message: "Route deleted successfully",
         deletedRoute: mapRouteToDTO(route as RouteWithRelations)
       });
     } catch (err) {
+      console.error('Delete route error:', err);
       return next(err);
     }
   }

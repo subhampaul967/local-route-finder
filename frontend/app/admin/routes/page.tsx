@@ -49,11 +49,14 @@ export default function AdminRoutesPage() {
 
     try {
       setDeleteLoading(routeId);
-      await deleteRoute(routeId);
+      console.log('Deleting route:', routeId);
+      const response = await deleteRoute(routeId);
+      console.log('Delete response:', response);
       setRoutes(routes.filter(route => route.id !== routeId));
+      console.log('Route deleted successfully');
     } catch (err) {
-      console.error(err);
-      alert('Failed to delete route');
+      console.error('Delete error:', err);
+      alert('Failed to delete route. Check console for details.');
     } finally {
       setDeleteLoading(null);
     }
