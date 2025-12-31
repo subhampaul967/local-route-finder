@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { CitySelector } from "@/components/CitySelector";
 import { useAuthStore } from "@/stores/authStore";
 import Link from "next/link";
+import { AppShell } from "@/components/layout/AppShell";
 
 export default function HomePage() {
   const router = useRouter();
@@ -54,70 +55,63 @@ export default function HomePage() {
   };
 
   return (
-    <main className="mx-auto flex max-w-xl flex-1 flex-col gap-4 px-4 py-6">
-      <h1 className="text-center text-2xl font-semibold tracking-tight text-brand-foreground">
-        Local Bus / Shared Auto Finder
-      </h1>
-      
-      {selectedCity && (
-        <div className="text-center">
-          <span className="inline-flex items-center rounded-full bg-blue-500/10 px-3 py-1 text-sm text-blue-400">
-            📍 {selectedCity}
-          </span>
-        </div>
-      )}
-      
-      <p className="text-center text-sm text-slate-300">
-        Search routes like <span className="font-semibold">"Railway Station to College"</span>
-        {" "}
-        to see shared autos and local buses contributed by the community.
-      </p>
+    <AppShell>
+      <main className="mx-auto flex max-w-sm flex-1 flex-col gap-4 px-4 py-6">
+        <Card className="p-6 bg-slate-900/60">
+          <div className="mb-4 text-center">
+            <h1 className="text-2xl font-semibold text-brand-foreground">
+              Local Bus / Shared Auto Finder
+            </h1>
+            <p className="text-sm text-slate-400 mt-2">
+              Community-sourced local transport wiki for shared autos and private buses in Indian towns.
+            </p>
+          </div>
 
-      <Card className="mt-2 bg-slate-900/60 p-4 shadow-card">
-        <SearchForm
-          from={from}
-          to={to}
-          onChangeFrom={setFrom}
-          onChangeTo={setTo}
-          onSubmit={handleSubmit}
-          showSubmitButton
-        />
-      </Card>
-
-      {selectedCity && (
-        <div className="text-center">
-          <CitySelector 
-            currentCity={selectedCity} 
-            onCityChange={handleCityChange}
+          <SearchForm
+            from={from}
+            to={to}
+            onChangeFrom={setFrom}
+            onChangeTo={setTo}
+            onSubmit={handleSubmit}
+            showSubmitButton
           />
-        </div>
-      )}
+        </Card>
 
-      {selectedCity && (
-        <div className="text-center">
-          <Button 
-            variant="outline" 
-            onClick={handleViewAllRoutes}
-            className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
-          >
-            🚌 View All Routes in {selectedCity}
-          </Button>
-        </div>
-      )}
+        {selectedCity && (
+          <div className="text-center">
+            <CitySelector 
+              currentCity={selectedCity} 
+              onCityChange={handleCityChange}
+            />
+          </div>
+        )}
 
-      {/* Admin routes button */}
-      {user?.role === 'ADMIN' && (
-        <div className="text-center">
-          <Link href="/admin/routes">
+        {selectedCity && (
+          <div className="text-center">
             <Button 
               variant="outline" 
-              className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
+              onClick={handleViewAllRoutes}
+              className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
             >
-              ⚙️ Manage All Routes (Admin)
+              🚌 View All Routes in {selectedCity}
             </Button>
-          </Link>
-        </div>
-      )}
-    </main>
+          </div>
+        )}
+
+        {/* Admin routes button */}
+        {user?.role === 'ADMIN' && (
+          <div className="text-center">
+            <Link href="/admin/routes">
+              <Button 
+                variant="outline" 
+                className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
+              >
+                ⚙️ Manage All Routes (Admin)
+              </Button>
+            </Link>
+          </div>
+        )}
+      </main>
+    </AppShell>
   );
 }
