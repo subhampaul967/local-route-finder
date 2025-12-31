@@ -13,6 +13,34 @@ import { validateRouteCandidate } from "../services/ai/routeValidation";
 
 export const routesRouter = Router();
 
+// Admin-only: get all routes (including pending)
+routesRouter.get(
+  "/admin/all",
+  authenticate,
+  requireAdmin,
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const routes = (await prisma.route.findMany({
+        include: {
+          fromLocation: true,
+          toLocation: true,
+          fares: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      })) as RouteWithRelations[];
+
+      return res.json({ 
+        routes: routes.map(mapRouteToDTO),
+        totalRoutes: routes.length 
+      });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
 // GET /city - get all routes in selected city
 routesRouter.get(
   "/city",
@@ -340,6 +368,44 @@ routesRouter.patch(
       });
 
       return res.json({ route: mapRouteToDTO(route as RouteWithRelations) });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+// Admin-only: delete a route completely
+routesRouter.delete(
+  "/:id",
+  authenticate,
+  requireAdmin,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+
+      // First check if route exists
+      const route = await prisma.route.findUnique({
+        where: { id },
+        include: { 
+          fares: true,
+          fromLocation: true,
+          toLocation: true,
+        },
+      });
+
+      if (!route) {
+        return res.status(404).json({ error: "Route not found" });
+      }
+
+      // Delete the route (fares will be deleted due to cascade)
+      await prisma.route.delete({
+        where: { id },
+      });
+
+      return res.json({ 
+        message: "Route deleted successfully",
+        deletedRoute: mapRouteToDTO(route as RouteWithRelations)
+      });
     } catch (err) {
       return next(err);
     }

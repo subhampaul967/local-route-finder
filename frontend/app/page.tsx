@@ -6,9 +6,12 @@ import { SearchForm } from "@/components/search/SearchForm";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CitySelector } from "@/components/CitySelector";
+import { useAuthStore } from "@/stores/authStore";
+import Link from "next/link";
 
 export default function HomePage() {
   const router = useRouter();
+  const { user } = useAuthStore();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
@@ -105,6 +108,20 @@ export default function HomePage() {
           <div className="text-xs text-slate-500 mt-2">
             Debug: City = "{selectedCity}"
           </div>
+        </div>
+      )}
+
+      {/* Admin routes button */}
+      {user?.role === 'ADMIN' && (
+        <div className="text-center">
+          <Link href="/admin/routes">
+            <Button 
+              variant="outline" 
+              className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
+            >
+              ⚙️ Manage All Routes (Admin)
+            </Button>
+          </Link>
         </div>
       )}
 

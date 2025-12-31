@@ -27,6 +27,14 @@ export const getCityRoutes = (city: string) => {
   return api.get("/api/routes/city", { params: { city } });
 };
 
+export const getAllAdminRoutes = () => {
+  return api.get("/api/routes/admin/all");
+};
+
+export const deleteRoute = (id: string) => {
+  return api.delete(`/api/routes/${id}`);
+};
+
 export interface SubmitRoutePayload {
   fromLocationId?: string;
   toLocationId?: string;
