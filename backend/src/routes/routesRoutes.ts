@@ -288,6 +288,35 @@ routesRouter.patch(
   }
 );
 
+// Admin-only: delete routes approved in last 24 hours (TEMPORARY CLEANUP)
+routesRouter.delete(
+  "/cleanup/recent-approved",
+  authenticate,
+  requireAdmin,
+  async (_req: Request, res: Response, next: NextFunction) => {
+    try {
+      const twentyFourHoursAgo = new Date();
+      twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
+
+      const result = await prisma.route.deleteMany({
+        where: {
+          status: "APPROVED",
+          updatedAt: {
+            gte: twentyFourHoursAgo,
+          },
+        },
+      });
+
+      return res.json({ 
+        message: `Deleted ${result.count} routes approved in the last 24 hours`,
+        deletedCount: result.count 
+      });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
 // Admin-only: reject a route.
 routesRouter.patch(
   "/:id/reject",
