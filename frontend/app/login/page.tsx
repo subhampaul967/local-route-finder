@@ -9,6 +9,95 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
+const INDIAN_CITIES = [
+  "Kolkata",
+  "Delhi",
+  "Mumbai",
+  "Durgapur",
+  "Nabadwip",
+  "Chandigarh",
+  "Goa",
+  "Bangalore",
+  "Chennai",
+  "Hyderabad",
+  "Pune",
+  "Jaipur",
+  "Lucknow",
+  "Ahmedabad",
+  "Surat",
+  "Kanpur",
+  "Nagpur",
+  "Indore",
+  "Thane",
+  "Bhopal",
+  "Visakhapatnam",
+  "Pimpri-Chinchwad",
+  "Patna",
+  "Vadodara",
+  "Ghaziabad",
+  "Ludhiana",
+  "Agra",
+  "Nashik",
+  "Faridabad",
+  "Meerut",
+  "Rajkot",
+  "Kalyan-Dombivali",
+  "Vasai-Virar",
+  "Varanasi",
+  "Srinagar",
+  "Aurangabad",
+  "Dhanbad",
+  "Amritsar",
+  "Navi Mumbai",
+  "Allahabad",
+  "Ranchi",
+  "Howrah",
+  "Coimbatore",
+  "Jabalpur",
+  "Gwalior",
+  "Vijayawada",
+  "Jodhpur",
+  "Madurai",
+  "Raipur",
+  "Kota",
+  "Guwahati",
+  "Chandigarh",
+  "Hubli-Dharwad",
+  "Cochin",
+  "Cuttack",
+  "Dehradun",
+  "Durgapur",
+  "Asansol",
+  "Rourkela",
+  "Nanded",
+  "Kolhapur",
+  "Ajmer",
+  "Akola",
+  "Amravati",
+  "Bokaro",
+  "Bhilai",
+  "Bilaspur",
+  "Bikaner",
+  "Bhubaneswar",
+  "Corporation (Chennai)",
+  "Davanagere",
+  "Dharwad",
+  "Erode",
+  "Gulbarga",
+  "Kurnool",
+  "Latur",
+  "Nellore",
+  "Pondicherry",
+  "Sangli",
+  "Siliguri",
+  "Tiruchirappalli",
+  "Tirupur",
+  "Ujjain",
+  "Vijayawada",
+  "Warangal",
+  "Nabadwip",
+];
+
 export default function LoginPage() {
   const router = useRouter();
   const { setAuth } = useAuthStore();
@@ -17,10 +106,16 @@ export default function LoginPage() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [selectedCity, setSelectedCity] = useState("");
 
   const handleSendOtp = async () => {
     if (!phone.trim()) {
       alert("Please enter your mobile number.");
+      return;
+    }
+
+    if (!selectedCity) {
+      alert("Please select your city.");
       return;
     }
 
@@ -48,6 +143,11 @@ export default function LoginPage() {
       return;
     }
 
+    if (!selectedCity) {
+      alert("Please select your city.");
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await loginRequest(phone, otp);
@@ -56,6 +156,9 @@ export default function LoginPage() {
         user: { id: string; phone: string; role: string; name?: string | null };
       };
 
+      // Store selected city in localStorage for use throughout the app
+      localStorage.setItem('selectedCity', selectedCity);
+      
       setAuth(data.user as any, data.token);
       router.push("/");
     } catch (err) {
@@ -76,6 +179,23 @@ export default function LoginPage() {
       </p>
 
       <Card className="space-y-4 bg-slate-900/60 p-4">
+        <div className="space-y-1">
+          <Label htmlFor="city">Select your city</Label>
+          <select
+            id="city"
+            value={selectedCity}
+            onChange={(e) => setSelectedCity(e.target.value)}
+            className="w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          >
+            <option value="">Choose your city...</option>
+            {INDIAN_CITIES.map((city) => (
+              <option key={city} value={city}>
+                {city}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="space-y-1">
           <Label htmlFor="phone">Mobile number</Label>
           <Input
