@@ -18,6 +18,14 @@ export default function HomePage() {
     setSelectedCity(city);
   }, []);
 
+  // Also check localStorage on every render (in case it's set after login)
+  useEffect(() => {
+    const city = localStorage.getItem('selectedCity') || "";
+    if (city !== selectedCity) {
+      setSelectedCity(city);
+    }
+  }, [selectedCity]);
+
   // Simple client-side validation before navigating to results page.
   const handleSubmit = () => {
     if (!from.trim() || !to.trim()) {
@@ -77,8 +85,19 @@ export default function HomePage() {
           >
             🚌 View All Routes in {selectedCity}
           </Button>
+          {/* Debug info - remove later */}
+          <div className="text-xs text-slate-500 mt-2">
+            Debug: City = "{selectedCity}"
+          </div>
         </div>
       )}
+
+      {/* Always show this for debugging */}
+      <div className="text-center">
+        <div className="text-xs text-slate-500">
+          localStorage city = "{localStorage.getItem('selectedCity') || 'null'}"
+        </div>
+      </div>
     </main>
   );
 }
