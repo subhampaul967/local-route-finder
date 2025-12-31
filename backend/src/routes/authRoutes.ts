@@ -6,9 +6,9 @@ import { env } from "../config/env";
 
 export const authRouter = Router();
 
-export { authRouter };
-
 // Mock OTP login endpoint.
+// In production you would integrate with an SMS provider and verify the OTP.
+authRouter.post("/login", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { phone } = parseBody(loginSchema, req.body);
 
