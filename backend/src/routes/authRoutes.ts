@@ -12,15 +12,27 @@ authRouter.post("/login", async (req: Request, res: Response, next: NextFunction
   try {
     const { phone } = parseBody(loginSchema, req.body);
 
+    // Check if this is the admin phone number
+    const isAdmin = phone === "1234567890";
+
     // Upsert user by phone number. New users are regular USERs by default.
     const user = await prisma.user.upsert({
       where: { phone },
       update: {},
       create: {
         phone,
-        role: "USER",
+        role: isAdmin ? "ADMIN" : "USER",
       },
     });
+
+    // If this is the admin phone but user wasn't created as admin, update it
+    if (isAdmin && user.role !== "ADMIN") {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { role: "ADMIN" },
+      });
+      user.role = "ADMIN";
+    }
 
     const token = jwt.sign(
       {
