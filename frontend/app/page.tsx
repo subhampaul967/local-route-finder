@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { CitySelector } from "@/components/CitySelector";
 import { useAuthStore } from "@/stores/authStore";
 import Link from "next/link";
-import { AppShell } from "@/components/layout/AppShell";
+import { SimpleAppShell } from "@/components/layout/SimpleAppShell";
 
 export default function HomePage() {
   const router = useRouter();
@@ -55,7 +55,7 @@ export default function HomePage() {
   };
 
   return (
-    <AppShell>
+    <SimpleAppShell>
       <main className="mx-auto flex max-w-sm flex-1 flex-col gap-4 px-4 py-6">
         <Card className="p-6 bg-slate-900/60">
           <div className="mb-4 text-center">
@@ -112,6 +112,6 @@ export default function HomePage() {
           </div>
         )}
       </main>
-    </AppShell>
+    </SimpleAppShell>
   );
 }
