@@ -50,11 +50,22 @@ export default function CityRoutesPage() {
     const fetchRoutes = async () => {
       try {
         setLoading(true);
+        console.log('Fetching routes for city:', city);
         const response = await getCityRoutes(city);
+        console.log('City routes response:', response.data);
         setRoutes(response.data.routes);
+        console.log('Routes with coordinates:', response.data.routes.map((r: any) => ({
+          id: r.id,
+          from: r.fromLocation.name,
+          fromLat: r.fromLocation.lat,
+          fromLng: r.fromLocation.lng,
+          to: r.toLocation.name,
+          toLat: r.toLocation.lat,
+          toLng: r.toLocation.lng,
+        })));
       } catch (err) {
+        console.error('Error fetching city routes:', err);
         setError('Failed to load routes');
-        console.error(err);
       } finally {
         setLoading(false);
       }

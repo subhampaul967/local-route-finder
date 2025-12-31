@@ -23,11 +23,31 @@ interface Props {
 }
 
 export const RouteMap: React.FC<Props> = ({ routes }) => {
+  console.log('RouteMap received routes:', routes);
+  
+  if (!routes || routes.length === 0) {
+    console.log('No routes to display on map');
+    return (
+      <div className="mt-3 h-72 overflow-hidden rounded-lg border border-slate-800 flex items-center justify-center text-slate-400">
+        No routes to display
+      </div>
+    );
+  }
+
   const first = routes[0];
   const center: [number, number] = [
     first.fromLocation.lat || 19.8762,
     first.fromLocation.lng || 75.3433,
   ];
+
+  console.log('Map center:', center);
+  console.log('Routes for map:', routes.map(r => ({
+    id: r.id,
+    from: r.fromLocation.name,
+    fromCoords: [r.fromLocation.lat, r.fromLocation.lng],
+    to: r.toLocation.name,
+    toCoords: [r.toLocation.lat, r.toLocation.lng],
+  })));
 
   return (
     <div className="mt-3 h-72 overflow-hidden rounded-lg border border-slate-800">
