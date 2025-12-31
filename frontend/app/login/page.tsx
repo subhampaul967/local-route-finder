@@ -160,7 +160,9 @@ export default function LoginPage() {
       localStorage.setItem('selectedCity', selectedCity);
       
       setAuth(data.user as any, data.token);
-      router.push("/");
+      
+      // Force a page reload to ensure city is loaded
+      window.location.href = "/";
     } catch (err) {
       console.error(err);
       alert("Login failed. Please try again.");
