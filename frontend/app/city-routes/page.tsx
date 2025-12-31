@@ -7,20 +7,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { CitySelector } from '@/components/CitySelector';
-import dynamic from 'next/dynamic';
+import { MapboxRouteMap } from "@/components/map/MapboxRouteMap";
 import type { RouteDTO } from "@local/shared";
-
-const RouteMap = dynamic(
-  () => import("@/components/map/RouteMap").then((m) => m.RouteMap),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="mt-3 h-64 rounded-lg bg-slate-900/60 p-4 text-sm text-slate-300">
-        Loading map…
-      </div>
-    ),
-  }
-);
 
 interface Route {
   id: string;
@@ -135,7 +123,7 @@ export default function CityRoutesPage() {
 
       {showMap && routes.length > 0 && (
         <div className="mt-4">
-          <RouteMap routes={routes as RouteDTO[]} />
+          <MapboxRouteMap routes={routes as RouteDTO[]} />
         </div>
       )}
 
