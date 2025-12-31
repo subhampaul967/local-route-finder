@@ -33,6 +33,8 @@ export const getAllAdminRoutes = () => {
 
 export const deleteRoute = (id: string) => {
   console.log('Making DELETE request to route:', id);
+  console.log('API base URL:', api.defaults.baseURL);
+  console.log('Auth header:', api.defaults.headers.Authorization);
   return api.delete(`/api/routes/${id}`);
 };
 

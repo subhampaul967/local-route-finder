@@ -47,9 +47,25 @@ export default function AdminRoutesPage() {
       return;
     }
 
+    // Check if user is admin
+    const authData = JSON.parse(localStorage.getItem('auth') || '{}');
+    console.log('Current user:', authData.user);
+    console.log('User role:', authData.user?.role);
+
+    if (authData.user?.role !== 'ADMIN') {
+      alert('Access denied. Admin privileges required.');
+      return;
+    }
+
     try {
       setDeleteLoading(routeId);
       console.log('Deleting route:', routeId);
+      
+      // Check token
+      const token = localStorage.getItem('auth_token');
+      console.log('Auth token exists:', !!token);
+      console.log('Token preview:', token?.substring(0, 20) + '...');
+      
       const response = await deleteRoute(routeId);
       console.log('Delete response:', response);
       setRoutes(routes.filter(route => route.id !== routeId));
