@@ -57,7 +57,7 @@ export default function SimpleLoginPage() {
       
       // In development, show the OTP
       if (data.otp) {
-        alert(`OTP sent successfully! Development OTP: ${data.otp}`);
+        alert(`OTP sent successfully! Your OTP is: ${data.otp}`);
       } else {
         alert('OTP sent successfully! Please check your SMS.');
       }
