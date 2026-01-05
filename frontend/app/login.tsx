@@ -42,6 +42,11 @@ export default function SimpleLoginPage() {
       console.log('🔍 Sending OTP to:', phone);
       console.log('🔍 API URL:', process.env.NEXT_PUBLIC_API_BASE_URL);
       
+      // Test if API URL is available
+      if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
+        throw new Error('API URL not configured');
+      }
+      
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/send-otp`, {
         method: 'POST',
         headers: {
@@ -51,11 +56,14 @@ export default function SimpleLoginPage() {
       });
 
       console.log('🔍 Response status:', response.status);
+      console.log('🔍 Response headers:', response.headers);
+      
       const data = await response.json();
       console.log('🔍 Response data:', data);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to send OTP');
+        console.error('❌ API Error Response:', data);
+        throw new Error(data.error || `HTTP ${response.status}: ${response.statusText}`);
       }
 
       setOtpSent(true);
@@ -68,7 +76,20 @@ export default function SimpleLoginPage() {
       }
     } catch (err: any) {
       console.error('❌ Send OTP error:', err);
-      alert(err.message || "Failed to send OTP. Please try again.");
+      console.error('❌ Error details:', err.message);
+      console.error('❌ Error stack:', err.stack);
+      
+      // More detailed error message
+      let errorMessage = "Failed to send OTP. Please try again.";
+      if (err.message.includes('fetch')) {
+        errorMessage = "Network error: Cannot connect to backend. Please check your internet connection.";
+      } else if (err.message.includes('API URL not configured')) {
+        errorMessage = "Configuration error: API URL not set.";
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -235,6 +256,8 @@ export default function SimpleLoginPage() {
         {/* Debug info */}
         <div className="text-xs text-slate-500 mt-2 p-2 bg-slate-800 rounded">
           Debug: otpSent={otpSent.toString()}, phone={phone}, city={selectedCity}, loading={loading.toString()}
+          <br />
+          API URL: {process.env.NEXT_PUBLIC_API_BASE_URL || 'NOT SET'}
         </div>
       </Card>
     </main>
