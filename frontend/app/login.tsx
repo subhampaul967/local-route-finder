@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { Card } from "@/components/ui/card";
@@ -17,6 +17,27 @@ export default function SimpleLoginPage() {
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [selectedCity, setSelectedCity] = useState("");
+
+  // Test backend connection on component mount
+  React.useEffect(() => {
+    const testBackendConnection = async () => {
+      try {
+        console.log('🔍 Testing backend connection...');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/health`);
+        console.log('🔍 Health check status:', response.status);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Backend is healthy:', data);
+        } else {
+          console.error('❌ Backend health check failed:', response.status);
+        }
+      } catch (error) {
+        console.error('❌ Cannot connect to backend:', error);
+      }
+    };
+    
+    testBackendConnection();
+  }, []);
 
   const handleSendOtp = async () => {
     if (!phone.trim()) {
