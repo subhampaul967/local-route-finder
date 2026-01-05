@@ -6,14 +6,17 @@ import { SearchForm } from "@/components/search/SearchForm";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CitySelector } from "@/components/CitySelector";
+import { useAdminStore } from "@/stores/adminStore";
 import Link from "next/link";
 import { SimpleAppShell } from "@/components/layout/SimpleAppShell";
 
 export default function HomePage() {
   const router = useRouter();
+  const { admin, isAdmin, logout } = useAdminStore();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [showAdminMenu, setShowAdminMenu] = useState(false);
 
   // Load selected city from localStorage on mount
   useEffect(() => {
@@ -75,6 +78,54 @@ export default function HomePage() {
           />
         </Card>
 
+        {/* Admin Menu */}
+        <div className="relative">
+          <div className="text-center">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowAdminMenu(!showAdminMenu)}
+              className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
+            >
+              ⚙️ More Options
+            </Button>
+          </div>
+          
+          {showAdminMenu && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-50">
+              <div className="p-2 space-y-1">
+                {isAdmin() ? (
+                  <>
+                    <Link href="/admin/routes">
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start text-purple-400 hover:bg-purple-500/10"
+                      >
+                        ⚙️ Admin Panel
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="ghost" 
+                      onClick={logout}
+                      className="w-full justify-start text-red-400 hover:bg-red-500/10"
+                    >
+                      🚪 Logout Admin
+                    </Button>
+                  </>
+                ) : (
+                  <Link href="/admin/login">
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start text-purple-400 hover:bg-purple-500/10"
+                    >
+                      🔐 Admin Login
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
         {selectedCity && (
           <div className="text-center">
             <CitySelector 
@@ -95,18 +146,6 @@ export default function HomePage() {
             </Button>
           </div>
         )}
-
-        {/* Admin routes button - always visible now */}
-        <div className="text-center">
-          <Link href="/admin/routes">
-            <Button 
-              variant="outline" 
-              className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
-            >
-              ⚙️ Manage All Routes (Admin)
-            </Button>
-          </Link>
-        </div>
       </main>
     </SimpleAppShell>
   );

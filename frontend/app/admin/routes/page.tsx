@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { getAllAdminRoutes, deleteRoute } from '@/lib/api';
+import { useAdminStore } from '@/stores/adminStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -18,10 +20,20 @@ interface Route {
 }
 
 export default function AdminRoutesPage() {
+  const router = useRouter();
+  const { admin, token, isAdmin } = useAdminStore();
   const [routes, setRoutes] = useState<Route[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+
+  // Check admin authentication
+  useEffect(() => {
+    if (!isAdmin()) {
+      router.push('/admin/login');
+      return;
+    }
+  }, [isAdmin, router]);
 
   useEffect(() => {
     const fetchRoutes = async () => {

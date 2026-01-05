@@ -5,6 +5,7 @@ import morgan from "morgan";
 import { env } from "../config/env";
 import { rateLimitMiddleware } from "../middleware/rateLimit";
 import { errorHandler, notFoundHandler } from "../middleware/errorHandler";
+import { authRouter } from "../routes/authRoutes";
 import { routesRouter } from "../routes/routesRoutes";
 import { faresRouter } from "../routes/faresRoutes";
 
@@ -40,6 +41,7 @@ app.get("/health", (req: Request, res: Response) => {
 });
 
 // API routes
+app.use("/api/auth", authRouter);
 app.use("/api/routes", routesRouter);
 app.use("/api/fares", faresRouter);
 app.use("/fares", faresRouter);

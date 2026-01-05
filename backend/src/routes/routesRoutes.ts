@@ -1,5 +1,6 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { prisma } from "../config/prisma";
+import { authenticate, requireAdmin } from "../middleware/auth";
 import {
   createRouteSchema,
   parseBody,
@@ -12,9 +13,11 @@ import { validateRouteCandidate } from "../services/ai/routeValidation";
 
 export const routesRouter = Router();
 
-// Admin routes - authentication removed for open access
+// Admin routes - require authentication
 routesRouter.get(
   "/admin/all",
+  authenticate,
+  requireAdmin,
   async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const routes = (await prisma.route.findMany({
@@ -312,9 +315,11 @@ routesRouter.post(
   }
 );
 
-// View pending routes - authentication removed
+// View pending routes - require admin authentication
 routesRouter.get(
   "/pending",
+  authenticate,
+  requireAdmin,
   async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const routes = (await prisma.route.findMany({
@@ -336,9 +341,11 @@ routesRouter.get(
   }
 );
 
-// Approve route - authentication removed
+// Approve route - require admin authentication
 routesRouter.patch(
   "/:id/approve",
+  authenticate,
+  requireAdmin,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
@@ -365,9 +372,11 @@ routesRouter.patch(
   }
 );
 
-// Delete route - authentication removed
+// Delete route - require admin authentication
 routesRouter.delete(
   "/:id",
+  authenticate,
+  requireAdmin,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
@@ -409,9 +418,11 @@ routesRouter.delete(
   }
 );
 
-// Cleanup recent approved routes - authentication removed
+// Cleanup recent approved routes - require admin authentication
 routesRouter.delete(
   "/cleanup/recent-approved",
+  authenticate,
+  requireAdmin,
   async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const twentyFourHoursAgo = new Date();
@@ -436,9 +447,11 @@ routesRouter.delete(
   }
 );
 
-// Reject route - authentication removed
+// Reject route - require admin authentication
 routesRouter.patch(
   "/:id/reject",
+  authenticate,
+  requireAdmin,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
