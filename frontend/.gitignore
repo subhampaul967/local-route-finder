@@ -6,11 +6,11 @@ node_modules
 # Testing
 coverage
 
-# Build outputs
-dist/
-build/
-out/
+# Next.js
 .next/
+out/
+build
+dist
 
 # Misc
 .DS_Store
@@ -21,20 +21,26 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment variables - IMPORTANT!
+# Local env files
+.env*.local
 .env
-.env.local
 .env.development.local
 .env.test.local
 .env.production.local
-.env.example
 
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-prisma/dev.db
-prisma/dev.db-journal
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
 
 # Logs
 logs
@@ -82,12 +88,20 @@ jspm_packages/
 .cache
 .parcel-cache
 
-# IDE
-.vscode/
-.idea/
+# Next.js build output
+.next
 
-# OS
-Thumbs.db
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
 
 # Temporary folders
 tmp/
@@ -102,48 +116,3 @@ temp/
 *.njsproj
 *.sln
 *.sw?
-
-# TypeScript
-*.tsbuildinfo
-
-# Vercel
-.vercel
-
-# Docker
-.dockerignore
-
-# Keys and certificates
-*.key
-*.pem
-*.p12
-*.pfx
-*.crt
-*.cer
-
-# Secrets
-*.secret
-secrets/
-.secrets
-
-# AWS
-.aws/
-
-# Google Cloud
-.gcloud/
-
-# Terraform
-*.tfstate
-*.tfstate.*
-.terraform/
-
-# Kubernetes
-*.kubeconfig
-
-# Local configuration
-config/local.js
-config/local.json
-
-# Backup files
-*.bak
-*.backup
-*.old
