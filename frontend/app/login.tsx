@@ -39,6 +39,9 @@ export default function SimpleLoginPage() {
     setLoading(true);
     try {
       // Send real OTP
+      console.log('🔍 Sending OTP to:', phone);
+      console.log('🔍 API URL:', process.env.NEXT_PUBLIC_API_BASE_URL);
+      
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/send-otp`, {
         method: 'POST',
         headers: {
@@ -47,7 +50,9 @@ export default function SimpleLoginPage() {
         body: JSON.stringify({ phone }),
       });
 
+      console.log('🔍 Response status:', response.status);
       const data = await response.json();
+      console.log('🔍 Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to send OTP');
@@ -62,7 +67,7 @@ export default function SimpleLoginPage() {
         alert('OTP sent successfully! Please check your SMS.');
       }
     } catch (err: any) {
-      console.error(err);
+      console.error('❌ Send OTP error:', err);
       alert(err.message || "Failed to send OTP. Please try again.");
     } finally {
       setLoading(false);
