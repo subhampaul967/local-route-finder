@@ -11,6 +11,29 @@ export const loginSchema = z.object({
   otp: z.string().optional(), // For now we accept any OTP and do not verify.
 });
 
+// Send OTP schema
+export const sendOTPSchema = z.object({
+  phone: z
+    .string()
+    .min(10)
+    .max(10)
+    .regex(/^[6-9][0-9]{9}$/g, "Invalid Indian phone number"),
+});
+
+// Verify OTP schema
+export const verifyOTPSchema = z.object({
+  phone: z
+    .string()
+    .min(10)
+    .max(10)
+    .regex(/^[6-9][0-9]{9}$/g, "Invalid Indian phone number"),
+  otp: z
+    .string()
+    .min(6)
+    .max(6)
+    .regex(/^[0-9]{6}$/g, "Invalid OTP format"),
+});
+
 // Route search schema used for query parameters.
 export const routeSearchSchema = z.object({
   from: z.string().min(1, "From is required"),

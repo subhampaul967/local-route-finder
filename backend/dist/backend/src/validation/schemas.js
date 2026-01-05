@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseBody = exports.parseQuery = exports.upsertFareSchema = exports.createRouteSchema = exports.routeSearchSchema = exports.loginSchema = void 0;
+exports.parseBody = exports.parseQuery = exports.upsertFareSchema = exports.createRouteSchema = exports.routeSearchSchema = exports.verifyOTPSchema = exports.sendOTPSchema = exports.loginSchema = void 0;
 const zod_1 = require("zod");
 const client_1 = require("@prisma/client");
 // Login schema: mock OTP flow, validates phone format.
@@ -11,6 +11,27 @@ exports.loginSchema = zod_1.z.object({
         .max(15)
         .regex(/^[0-9]{10,15}$/g, "Invalid phone number"),
     otp: zod_1.z.string().optional(), // For now we accept any OTP and do not verify.
+});
+// Send OTP schema
+exports.sendOTPSchema = zod_1.z.object({
+    phone: zod_1.z
+        .string()
+        .min(10)
+        .max(10)
+        .regex(/^[6-9][0-9]{9}$/g, "Invalid Indian phone number"),
+});
+// Verify OTP schema
+exports.verifyOTPSchema = zod_1.z.object({
+    phone: zod_1.z
+        .string()
+        .min(10)
+        .max(10)
+        .regex(/^[6-9][0-9]{9}$/g, "Invalid Indian phone number"),
+    otp: zod_1.z
+        .string()
+        .min(6)
+        .max(6)
+        .regex(/^[0-9]{6}$/g, "Invalid OTP format"),
 });
 // Route search schema used for query parameters.
 exports.routeSearchSchema = zod_1.z.object({
