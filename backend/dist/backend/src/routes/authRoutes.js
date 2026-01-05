@@ -14,22 +14,31 @@ exports.authRouter = (0, express_1.Router)();
 // Send OTP endpoint
 exports.authRouter.post("/send-otp", async (req, res, next) => {
     try {
+        console.log('📨 Received send-otp request');
         const { phone } = (0, schemas_1.parseBody)(schemas_1.sendOTPSchema, req.body);
+        console.log(`📱 Processing OTP request for phone: ${phone}`);
         // Validate phone number (basic validation for Indian mobile numbers)
         const phoneRegex = /^[6-9]\d{9}$/;
         if (!phoneRegex.test(phone)) {
+            console.log(`❌ Invalid phone number format: ${phone}`);
             return res.status(400).json({
                 error: "Invalid phone number. Please enter a valid 10-digit Indian mobile number."
             });
         }
         // Generate and send OTP
+        console.log('🔢 Generating OTP...');
         const otp = otpService_1.otpService.generateOTP();
+        console.log(`🔢 Generated OTP: ${otp}`);
+        console.log('📤 Sending OTP...');
         const sent = await otpService_1.otpService.sendOTP(phone, otp);
+        console.log(`📤 OTP send result: ${sent}`);
         if (!sent) {
+            console.log('❌ OTP send failed');
             return res.status(500).json({
                 error: "Failed to send OTP. Please try again."
             });
         }
+        console.log('✅ OTP sent successfully, creating/updating user...');
         // Create or update user
         const isAdmin = phone === "1234567890"; // Keep admin phone for testing
         const user = await prisma_1.prisma.user.upsert({
@@ -40,13 +49,17 @@ exports.authRouter.post("/send-otp", async (req, res, next) => {
                 role: isAdmin ? "ADMIN" : "USER",
             },
         });
+        console.log(`✅ User created/updated: ${user.id}, role: ${user.role}`);
         // Ensure admin role for admin phone
         if (isAdmin && user.role !== "ADMIN") {
+            console.log('👑 Updating user to admin role...');
             await prisma_1.prisma.user.update({
                 where: { id: user.id },
                 data: { role: "ADMIN" },
             });
+            console.log('✅ Admin role updated');
         }
+        console.log('✅ Send OTP process completed successfully');
         return res.json({
             message: "OTP sent successfully",
             phone: phone,
@@ -56,6 +69,8 @@ exports.authRouter.post("/send-otp", async (req, res, next) => {
         });
     }
     catch (err) {
+        console.error('❌ Send OTP error:', err);
+        console.error('❌ Error stack:', err.stack);
         return next(err);
     }
 });

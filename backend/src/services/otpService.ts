@@ -11,16 +11,21 @@ export class TwilioOTPService implements OTPService {
   private otpStore: Map<string, { otp: string; expiresAt: Date }> = new Map();
 
   constructor() {
-    // Check for Twilio credentials
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    
-    if (!accountSid || !authToken) {
-      console.warn('⚠️ Twilio credentials not found. Using mock OTP service for development.');
+    try {
+      // Check for Twilio credentials
+      const accountSid = process.env.TWILIO_ACCOUNT_SID;
+      const authToken = process.env.TWILIO_AUTH_TOKEN;
+      
+      if (!accountSid || !authToken) {
+        console.warn('⚠️ Twilio credentials not found. Using mock OTP service for development.');
+        this.twilio = null;
+      } else {
+        console.log('✅ Twilio credentials found. Real SMS enabled.');
+        this.twilio = new Twilio(accountSid, authToken);
+      }
+    } catch (error) {
+      console.error('❌ Error initializing Twilio service:', error);
       this.twilio = null;
-    } else {
-      console.log('✅ Twilio credentials found. Real SMS enabled.');
-      this.twilio = new Twilio(accountSid, authToken);
     }
   }
 
@@ -31,9 +36,12 @@ export class TwilioOTPService implements OTPService {
 
   async sendOTP(phoneNumber: string, otp: string): Promise<boolean> {
     try {
+      console.log(`📱 Starting OTP send process for ${phoneNumber}`);
+      
       // Store OTP with 5-minute expiry
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
       this.otpStore.set(phoneNumber, { otp, expiresAt });
+      console.log(`✅ OTP stored for ${phoneNumber}, expires at ${expiresAt.toISOString()}`);
 
       if (!this.twilio) {
         // Mock SMS for development
@@ -52,6 +60,7 @@ export class TwilioOTPService implements OTPService {
       // Format phone number for international format (add +91 for India)
       const formattedPhone = phoneNumber.startsWith('+') ? phoneNumber : `+91${phoneNumber}`;
 
+      console.log(`📬 Sending real SMS to ${formattedPhone} via Twilio`);
       const message = await this.twilio.messages.create({
         body: `Your Local Route Finder OTP is: ${otp}. Valid for 5 minutes. Do not share this code.`,
         from: twilioPhoneNumber,
@@ -63,6 +72,7 @@ export class TwilioOTPService implements OTPService {
       return true;
     } catch (error) {
       console.error('❌ Failed to send OTP via Twilio:', error);
+      console.error('❌ Error details:', error);
       return false;
     }
   }
