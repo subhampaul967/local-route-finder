@@ -53,7 +53,8 @@ authRouter.post("/send-otp", async (req: Request, res: Response, next: NextFunct
       message: "OTP sent successfully",
       phone: phone,
       // In development, include OTP for testing
-      ...(process.env.NODE_ENV !== 'production' && { otp })
+      otp: process.env.NODE_ENV !== 'production' ? otp : undefined,
+      development: process.env.NODE_ENV !== 'production'
     });
   } catch (err) {
     return next(err);

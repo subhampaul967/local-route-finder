@@ -1,23 +1,11 @@
-import { Twilio } from 'twilio';
-
 export interface OTPService {
   generateOTP(): string;
   sendOTP(phoneNumber: string, otp: string): Promise<boolean>;
   verifyOTP(phoneNumber: string, userOTP: string): boolean;
 }
 
-export class TwilioOTPService implements OTPService {
-  private twilio: Twilio;
+export class SimpleOTPService implements OTPService {
   private otpStore: Map<string, { otp: string; expiresAt: Date }> = new Map();
-
-  constructor() {
-    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
-      console.warn('Twilio credentials not found. Using mock OTP service.');
-      this.twilio = null as any;
-    } else {
-      this.twilio = new Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-    }
-  }
 
   generateOTP(): string {
     // Generate 6-digit OTP
@@ -30,21 +18,15 @@ export class TwilioOTPService implements OTPService {
       const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
       this.otpStore.set(phoneNumber, { otp, expiresAt });
 
-      if (!this.twilio) {
-        // Mock SMS for development
-        console.log(`📱 Mock OTP sent to ${phoneNumber}: ${otp}`);
-        console.log(`⏰ OTP expires at: ${expiresAt.toISOString()}`);
-        return true;
-      }
-
-      // Send real SMS via Twilio
-      const message = await this.twilio.messages.create({
-        body: `Your Local Route Finder OTP is: ${otp}. Valid for 5 minutes.`,
-        from: process.env.TWILIO_PHONE_NUMBER,
-        to: phoneNumber
-      });
-
-      console.log(`✅ OTP sent to ${phoneNumber}: ${otp}`);
+      // Always log OTP for development (since we don't have real SMS)
+      console.log(`📱 OTP generated for ${phoneNumber}: ${otp}`);
+      console.log(`⏰ OTP expires at: ${expiresAt.toISOString()}`);
+      
+      // In development, simulate SMS delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log(`✅ OTP "sent" to ${phoneNumber}: ${otp}`);
+      console.log(`📱 NOTE: This is a mock SMS. In production, configure Twilio for real SMS.`);
       return true;
     } catch (error) {
       console.error('❌ Failed to send OTP:', error);
@@ -56,11 +38,13 @@ export class TwilioOTPService implements OTPService {
     const storedData = this.otpStore.get(phoneNumber);
     
     if (!storedData) {
+      console.log(`❌ No OTP found for ${phoneNumber}`);
       return false;
     }
 
     // Check if OTP has expired
     if (new Date() > storedData.expiresAt) {
+      console.log(`❌ OTP expired for ${phoneNumber}`);
       this.otpStore.delete(phoneNumber);
       return false;
     }
@@ -69,7 +53,10 @@ export class TwilioOTPService implements OTPService {
     const isValid = storedData.otp === userOTP;
     
     if (isValid) {
+      console.log(`✅ OTP verified successfully for ${phoneNumber}`);
       this.otpStore.delete(phoneNumber); // Clean up after successful verification
+    } else {
+      console.log(`❌ Invalid OTP for ${phoneNumber}. Expected: ${storedData.otp}, Got: ${userOTP}`);
     }
 
     return isValid;
@@ -87,4 +74,4 @@ export class TwilioOTPService implements OTPService {
 }
 
 // Singleton instance
-export const otpService = new TwilioOTPService();
+export const otpService = new SimpleOTPService();
