@@ -22,9 +22,11 @@ export default function AdminLoginPage() {
     setLoading(true);
     try {
       console.log('🔐 Attempting admin login...');
-      console.log('🔍 API URL:', process.env.NEXT_PUBLIC_API_BASE_URL);
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/admin/login`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://local-route-finder-backend.onrender.com';
+      console.log('🔍 API URL:', apiUrl);
+      
+      const response = await fetch(`${apiUrl}/api/auth/admin/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
