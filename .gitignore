@@ -29,6 +29,10 @@ yarn-error.log*
 .env.production.local
 .env.example
 
+# Admin credentials - NEVER commit real admin credentials!
+admin-credentials.txt
+admin.env
+
 # Database files
 *.db
 *.sqlite

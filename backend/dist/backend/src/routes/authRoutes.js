@@ -5,43 +5,43 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRouter = void 0;
 const express_1 = require("express");
-const prisma_1 = require("../config/prisma");
-const schemas_1 = require("../validation/schemas");
-const env_1 = require("../config/env");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const env_1 = require("../config/env");
 const auth_1 = require("../middleware/auth");
 exports.authRouter = (0, express_1.Router)();
 // Admin login endpoint
 exports.authRouter.post("/admin/login", async (req, res, next) => {
     try {
-        const { phone, password } = (0, schemas_1.parseBody)(schemas_1.loginSchema, req.body);
-        // Check if user exists and is admin
-        const user = await prisma_1.prisma.user.findUnique({
-            where: { phone },
-        });
-        if (!user || user.role !== 'ADMIN') {
-            return res.status(401).json({ error: "Invalid admin credentials" });
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).json({ error: "Username and password required" });
         }
-        // Simple password check (in production, use proper password hashing)
-        // For now, using a simple admin password
-        const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
-        if (password !== adminPassword) {
+        // Check admin credentials from environment variables
+        const adminUsername = process.env.ADMIN_USERNAME;
+        const adminPassword = process.env.ADMIN_PASSWORD;
+        if (!adminUsername || !adminPassword) {
+            console.error('❌ Admin credentials not configured in environment');
+            return res.status(500).json({ error: "Admin authentication not configured" });
+        }
+        // Validate credentials
+        if (username !== adminUsername || password !== adminPassword) {
+            console.log(`❌ Invalid admin login attempt: username=${username}`);
             return res.status(401).json({ error: "Invalid admin credentials" });
         }
         // Generate JWT token
         const token = jsonwebtoken_1.default.sign({
-            sub: user.id,
-            phone: user.phone,
-            role: user.role
+            sub: 'admin',
+            username: adminUsername,
+            role: 'ADMIN'
         }, env_1.env.jwtSecret, { expiresIn: '24h' });
-        console.log(`✅ Admin login successful: ${phone}`);
+        console.log(`✅ Admin login successful: ${username}`);
         return res.json({
             message: "Admin login successful",
             token,
             user: {
-                id: user.id,
-                phone: user.phone,
-                role: user.role,
+                id: 'admin',
+                username: adminUsername,
+                role: 'ADMIN',
             }
         });
     }

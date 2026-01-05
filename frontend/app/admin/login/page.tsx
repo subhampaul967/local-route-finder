@@ -9,13 +9,13 @@ import { Button } from "@/components/ui/button";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!phone.trim() || !password.trim()) {
-      alert("Please enter both phone and password.");
+    if (!username.trim() || !password.trim()) {
+      alert("Please enter both username and password.");
       return;
     }
 
@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ phone, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       const data = await response.json();
@@ -61,15 +61,13 @@ export default function AdminLoginPage() {
 
         <div className="space-y-4">
           <div className="space-y-1">
-            <Label htmlFor="phone">Admin Phone</Label>
+            <Label htmlFor="username">Admin Username</Label>
             <Input
-              id="phone"
-              type="tel"
-              inputMode="numeric"
-              maxLength={10}
-              placeholder="10 digit phone number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+              id="username"
+              type="text"
+              placeholder="Enter admin username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
 
