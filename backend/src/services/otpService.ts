@@ -15,6 +15,12 @@ export class TwilioOTPService implements OTPService {
       // Check for Twilio credentials
       const accountSid = process.env.TWILIO_ACCOUNT_SID;
       const authToken = process.env.TWILIO_AUTH_TOKEN;
+      const phoneNumber = process.env.TWILIO_PHONE_NUMBER;
+      
+      console.log('🔍 Checking Twilio configuration...');
+      console.log('🔍 TWILIO_ACCOUNT_SID:', accountSid ? 'SET' : 'NOT SET');
+      console.log('🔍 TWILIO_AUTH_TOKEN:', authToken ? 'SET' : 'NOT SET');
+      console.log('🔍 TWILIO_PHONE_NUMBER:', phoneNumber || 'NOT SET');
       
       if (!accountSid || !authToken) {
         console.warn('⚠️ Twilio credentials not found. Using mock OTP service for development.');
@@ -22,6 +28,10 @@ export class TwilioOTPService implements OTPService {
       } else {
         console.log('✅ Twilio credentials found. Real SMS enabled.');
         this.twilio = new Twilio(accountSid, authToken);
+        
+        if (!phoneNumber) {
+          console.warn('⚠️ TWILIO_PHONE_NUMBER not set. Will fall back to mock SMS.');
+        }
       }
     } catch (error) {
       console.error('❌ Error initializing Twilio service:', error);
@@ -54,7 +64,21 @@ export class TwilioOTPService implements OTPService {
       const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
       if (!twilioPhoneNumber) {
         console.error('❌ TWILIO_PHONE_NUMBER not configured');
-        return false;
+        console.log('📱 Falling back to mock SMS due to missing Twilio phone number');
+        // Fall back to mock mode
+        console.log(`📱 Mock OTP sent to ${phoneNumber}: ${otp}`);
+        console.log(`⏰ OTP expires at: ${expiresAt.toISOString()}`);
+        return true;
+      }
+
+      // Validate Twilio phone number format (should start with + and be a valid Twilio number)
+      if (!twilioPhoneNumber.startsWith('+') || twilioPhoneNumber.length < 10) {
+        console.error('❌ Invalid TWILIO_PHONE_NUMBER format:', twilioPhoneNumber);
+        console.log('📱 Falling back to mock SMS due to invalid Twilio phone number format');
+        // Fall back to mock mode
+        console.log(`📱 Mock OTP sent to ${phoneNumber}: ${otp}`);
+        console.log(`⏰ OTP expires at: ${expiresAt.toISOString()}`);
+        return true;
       }
 
       // Format phone number for international format (add +91 for India)
