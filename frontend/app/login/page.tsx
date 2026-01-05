@@ -311,6 +311,13 @@ export default function LoginPage() {
             </Button>
           </>
         )}
+
+        {/* Debug info - remove in production */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="text-xs text-slate-500 mt-2 p-2 bg-slate-800 rounded">
+            Debug: otpSent={otpSent.toString()}, phone={phone}, city={selectedCity}, loading={loading.toString()}
+          </div>
+        )}
       </Card>
     </main>
   );
