@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useAuthStore } from "@/stores/authStore";
+import { useAdminStore } from "@/stores/adminStore";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -10,7 +10,7 @@ export const SimpleAppShell = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { user, logout } = useAuthStore();
+  const { admin, logout } = useAdminStore();
   const [online, setOnline] = useState(true);
 
   useEffect(() => {
@@ -46,20 +46,16 @@ export const SimpleAppShell = ({
             🚌 Local Route Finder
           </Link>
           <nav className="flex items-center gap-3 text-sm">
-            {user ? (
+            {admin ? (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={logout}
                 className="px-2 text-[11px] text-slate-300"
               >
-                Logout
+                Admin Logout
               </Button>
-            ) : (
-              <Link href="/login" className="hover:text-brand-foreground">
-                Login
-              </Link>
-            )}
+            ) : null}
           </nav>
         </div>
       </header>

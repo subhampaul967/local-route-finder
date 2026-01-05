@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { RouteDTO } from "@local/shared";
-import { useAuthStore } from "@/stores/authStore";
+import { useAdminStore } from "@/stores/adminStore";
 import { fetchPendingRoutes, approveRoute, rejectRoute, upsertFare } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -91,7 +91,7 @@ const FareEditor: React.FC<FareEditorProps> = ({ route, onSaved }) => {
 };
 
 export default function AdminPage() {
-  const { user } = useAuthStore();
+  const { admin, isAdmin } = useAdminStore();
   const [routes, setRoutes] = useState<RouteDTO[] | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -113,23 +113,12 @@ export default function AdminPage() {
     loadPending();
   }, []);
 
-  if (!user) {
+  if (!isAdmin()) {
     return (
       <main className="mx-auto flex max-w-xl flex-1 flex-col gap-4 px-4 py-6">
         <h1 className="text-xl font-semibold text-brand-foreground">Admin</h1>
         <p className="text-sm text-slate-300">
-          Please login as an admin user to access this page.
-        </p>
-      </main>
-    );
-  }
-
-  if (user.role !== "ADMIN") {
-    return (
-      <main className="mx-auto flex max-w-xl flex-1 flex-col gap-4 px-4 py-6">
-        <h1 className="text-xl font-semibold text-brand-foreground">Admin</h1>
-        <p className="text-sm text-slate-300">
-          Your account does not have admin privileges.
+          Please login as an admin to access this page.
         </p>
       </main>
     );

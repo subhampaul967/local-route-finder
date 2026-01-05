@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
-import { useAuthStore } from "@/stores/authStore";
+import { useAdminStore } from "@/stores/adminStore";
 import { Button } from "@/components/ui/button";
 
 // Application shell with top nav, offline banner, and service worker registration.
@@ -13,7 +13,7 @@ export const AppShell = ({
   children: React.ReactNode;
 }) => {
   const online = useOnlineStatus();
-  const { user, logout } = useAuthStore();
+  const { admin, logout } = useAdminStore();
 
   // Register a very small service worker for PWA/offline support.
   useEffect(() => {
@@ -42,20 +42,16 @@ export const AppShell = ({
             <Link href="/admin" className="hover:text-brand-foreground">
               Admin
             </Link>
-            {user ? (
+            {admin ? (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={logout}
                 className="px-2 text-[11px] text-slate-300"
               >
-                Logout
+                Admin Logout
               </Button>
-            ) : (
-              <Link href="/login" className="hover:text-brand-foreground">
-                Login
-              </Link>
-            )}
+            ) : null}
           </nav>
         </div>
       </header>
