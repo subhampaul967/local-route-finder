@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { submitRoute } from "@/lib/api";
-import { useAuthStore } from "@/stores/authStore";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +20,6 @@ const VEHICLE_OPTIONS = [
 
 export default function AddRoutePage() {
   const router = useRouter();
-  const { user } = useAuthStore();
 
   const [fromName, setFromName] = useState("");
   const [toName, setToName] = useState("");
@@ -34,11 +32,7 @@ export default function AddRoutePage() {
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!user) {
-      alert("Please login before submitting a route.");
-      router.push("/login");
-      return;
-    }
+    // Authentication removed - anyone can submit routes now
 
     if (!fromName.trim() || !toName.trim()) {
       alert("From and To locations are required.");

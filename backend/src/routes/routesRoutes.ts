@@ -1,6 +1,5 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { prisma } from "../config/prisma";
-import { authenticate, requireAdmin, requireAuth } from "../middleware/auth";
 import {
   createRouteSchema,
   parseBody,
@@ -13,11 +12,9 @@ import { validateRouteCandidate } from "../services/ai/routeValidation";
 
 export const routesRouter = Router();
 
-// Admin-only: get all routes (including pending)
+// Admin routes - authentication removed for open access
 routesRouter.get(
   "/admin/all",
-  authenticate,
-  requireAdmin,
   async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const routes = (await prisma.route.findMany({
@@ -224,11 +221,9 @@ routesRouter.get(
 );
 
 // POST /routes - user submission for a new route.
-// Requires authentication. Creates a PENDING route tied to the submitting user.
+// Create route - authentication removed for open access
 routesRouter.post(
   "/",
-  authenticate,
-  requireAuth,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const body = parseBody(createRouteSchema, req.body);
@@ -317,11 +312,9 @@ routesRouter.post(
   }
 );
 
-// Admin-only: view all pending routes.
+// View pending routes - authentication removed
 routesRouter.get(
   "/pending",
-  authenticate,
-  requireAdmin,
   async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const routes = (await prisma.route.findMany({
@@ -343,11 +336,9 @@ routesRouter.get(
   }
 );
 
-// Admin-only: approve a route.
+// Approve route - authentication removed
 routesRouter.patch(
   "/:id/approve",
-  authenticate,
-  requireAdmin,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
@@ -374,11 +365,9 @@ routesRouter.patch(
   }
 );
 
-// Admin-only: delete a route completely
+// Delete route - authentication removed
 routesRouter.delete(
   "/:id",
-  authenticate,
-  requireAdmin,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
@@ -420,11 +409,9 @@ routesRouter.delete(
   }
 );
 
-// Admin-only: delete routes approved in last 24 hours (TEMPORARY CLEANUP)
+// Cleanup recent approved routes - authentication removed
 routesRouter.delete(
   "/cleanup/recent-approved",
-  authenticate,
-  requireAdmin,
   async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const twentyFourHoursAgo = new Date();
@@ -449,11 +436,9 @@ routesRouter.delete(
   }
 );
 
-// Admin-only: reject a route.
+// Reject route - authentication removed
 routesRouter.patch(
   "/:id/reject",
-  authenticate,
-  requireAdmin,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;

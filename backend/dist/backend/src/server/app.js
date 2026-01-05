@@ -11,7 +11,6 @@ const morgan_1 = __importDefault(require("morgan"));
 const env_1 = require("../config/env");
 const rateLimit_1 = require("../middleware/rateLimit");
 const errorHandler_1 = require("../middleware/errorHandler");
-const authRoutes_1 = require("../routes/authRoutes");
 const routesRoutes_1 = require("../routes/routesRoutes");
 const faresRoutes_1 = require("../routes/faresRoutes");
 const app = (0, express_1.default)();
@@ -38,7 +37,6 @@ app.get("/health", (req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 // API routes
-app.use("/api/auth", authRoutes_1.authRouter);
 app.use("/api/routes", routesRoutes_1.routesRouter);
 app.use("/api/fares", faresRoutes_1.faresRouter);
 app.use("/fares", faresRoutes_1.faresRouter);

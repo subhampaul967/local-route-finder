@@ -5,7 +5,6 @@ import { getAllAdminRoutes, deleteRoute } from '@/lib/api';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { useAuthStore } from '@/stores/authStore';
 
 interface Route {
   id: string;
@@ -19,7 +18,6 @@ interface Route {
 }
 
 export default function AdminRoutesPage() {
-  const { user } = useAuthStore();
   const [routes, setRoutes] = useState<Route[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -47,15 +45,8 @@ export default function AdminRoutesPage() {
       return;
     }
 
-    // Check if user is admin
-    const authData = JSON.parse(localStorage.getItem('auth') || '{}');
-    console.log('Current user:', authData.user);
-    console.log('User role:', authData.user?.role);
-
-    if (authData.user?.role !== 'ADMIN') {
-      alert('Access denied. Admin privileges required.');
-      return;
-    }
+    // Authentication removed - admin access now open
+    console.log('Admin routes page accessed');
 
     try {
       setDeleteLoading(routeId);
@@ -78,18 +69,7 @@ export default function AdminRoutesPage() {
     }
   };
 
-  if (!user || user.role !== 'ADMIN') {
-    return (
-      <main className="mx-auto flex max-w-4xl flex-1 flex-col gap-4 px-4 py-6">
-        <Card className="p-8 text-center bg-slate-900/60">
-          <div className="text-red-400">Access denied. Admin privileges required.</div>
-          <Link href="/" className="text-blue-400 hover:underline mt-4 inline-block">
-            ← Back to Home
-          </Link>
-        </Card>
-      </main>
-    );
-  }
+  // Authentication removed - admin access now open
 
   if (loading) {
     return (

@@ -3,14 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.routesRouter = void 0;
 const express_1 = require("express");
 const prisma_1 = require("../config/prisma");
-const auth_1 = require("../middleware/auth");
 const schemas_1 = require("../validation/schemas");
 const dtoMapper_1 = require("../utils/dtoMapper");
 const placeNormalization_1 = require("../services/ai/placeNormalization");
 const routeValidation_1 = require("../services/ai/routeValidation");
 exports.routesRouter = (0, express_1.Router)();
-// Admin-only: get all routes (including pending)
-exports.routesRouter.get("/admin/all", auth_1.authenticate, auth_1.requireAdmin, async (_req, res, next) => {
+// Admin routes - authentication removed for open access
+exports.routesRouter.get("/admin/all", async (_req, res, next) => {
     try {
         const routes = (await prisma_1.prisma.route.findMany({
             include: {
@@ -188,8 +187,8 @@ exports.routesRouter.get("/", async (req, res, next) => {
     }
 });
 // POST /routes - user submission for a new route.
-// Requires authentication. Creates a PENDING route tied to the submitting user.
-exports.routesRouter.post("/", auth_1.authenticate, auth_1.requireAuth, async (req, res, next) => {
+// Create route - authentication removed for open access
+exports.routesRouter.post("/", async (req, res, next) => {
     try {
         const body = (0, schemas_1.parseBody)(schemas_1.createRouteSchema, req.body);
         // Resolve or create locations from either IDs or human-friendly names.
@@ -265,8 +264,8 @@ exports.routesRouter.post("/", auth_1.authenticate, auth_1.requireAuth, async (r
         return next(err);
     }
 });
-// Admin-only: view all pending routes.
-exports.routesRouter.get("/pending", auth_1.authenticate, auth_1.requireAdmin, async (_req, res, next) => {
+// View pending routes - authentication removed
+exports.routesRouter.get("/pending", async (_req, res, next) => {
     try {
         const routes = (await prisma_1.prisma.route.findMany({
             where: { status: "PENDING" },
@@ -285,8 +284,8 @@ exports.routesRouter.get("/pending", auth_1.authenticate, auth_1.requireAdmin, a
         return next(err);
     }
 });
-// Admin-only: approve a route.
-exports.routesRouter.patch("/:id/approve", auth_1.authenticate, auth_1.requireAdmin, async (req, res, next) => {
+// Approve route - authentication removed
+exports.routesRouter.patch("/:id/approve", async (req, res, next) => {
     try {
         const { id } = req.params;
         const route = await prisma_1.prisma.route.update({
@@ -308,8 +307,8 @@ exports.routesRouter.patch("/:id/approve", auth_1.authenticate, auth_1.requireAd
         return next(err);
     }
 });
-// Admin-only: delete a route completely
-exports.routesRouter.delete("/:id", auth_1.authenticate, auth_1.requireAdmin, async (req, res, next) => {
+// Delete route - authentication removed
+exports.routesRouter.delete("/:id", async (req, res, next) => {
     try {
         const { id } = req.params;
         console.log('DELETE route request for ID:', id);
@@ -343,8 +342,8 @@ exports.routesRouter.delete("/:id", auth_1.authenticate, auth_1.requireAdmin, as
         return next(err);
     }
 });
-// Admin-only: delete routes approved in last 24 hours (TEMPORARY CLEANUP)
-exports.routesRouter.delete("/cleanup/recent-approved", auth_1.authenticate, auth_1.requireAdmin, async (_req, res, next) => {
+// Cleanup recent approved routes - authentication removed
+exports.routesRouter.delete("/cleanup/recent-approved", async (_req, res, next) => {
     try {
         const twentyFourHoursAgo = new Date();
         twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24);
@@ -365,8 +364,8 @@ exports.routesRouter.delete("/cleanup/recent-approved", auth_1.authenticate, aut
         return next(err);
     }
 });
-// Admin-only: reject a route.
-exports.routesRouter.patch("/:id/reject", auth_1.authenticate, auth_1.requireAdmin, async (req, res, next) => {
+// Reject route - authentication removed
+exports.routesRouter.patch("/:id/reject", async (req, res, next) => {
     try {
         const { id } = req.params;
         const route = await prisma_1.prisma.route.update({
