@@ -119,14 +119,41 @@ export default function LoginPage() {
       return;
     }
 
+    // Validate phone number (Indian mobile numbers start with 6-9)
+    const phoneRegex = /^[6-9][0-9]{9}$/;
+    if (!phoneRegex.test(phone)) {
+      alert("Please enter a valid 10-digit Indian mobile number.");
+      return;
+    }
+
     setLoading(true);
     try {
-      // Send OTP (mock - just call login without OTP to trigger OTP generation)
-      await loginRequest(phone);
+      // Send real OTP
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/send-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send OTP');
+      }
+
       setOtpSent(true);
-    } catch (err) {
+      
+      // In development, show the OTP
+      if (data.otp) {
+        alert(`OTP sent successfully! Development OTP: ${data.otp}`);
+      } else {
+        alert('OTP sent successfully! Please check your SMS.');
+      }
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to send OTP. Please try again.");
+      alert(err.message || "Failed to send OTP. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -148,13 +175,29 @@ export default function LoginPage() {
       return;
     }
 
+    // Validate OTP format
+    const otpRegex = /^[0-9]{6}$/;
+    if (!otpRegex.test(otp)) {
+      alert("Please enter a valid 6-digit OTP.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await loginRequest(phone, otp);
-      const data = response.data as {
-        token: string;
-        user: { id: string; phone: string; role: string; name?: string | null };
-      };
+      // Verify OTP and login
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/verify-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone, otp }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
 
       // Store selected city in localStorage for use throughout the app
       localStorage.setItem('selectedCity', selectedCity);
@@ -163,9 +206,9 @@ export default function LoginPage() {
       
       // Force a page reload to ensure city is loaded
       window.location.href = "/";
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Login failed. Please try again.");
+      alert(err.message || "Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -175,9 +218,7 @@ export default function LoginPage() {
     <main className="mx-auto flex max-w-sm flex-1 flex-col gap-4 px-4 py-6">
       <h1 className="text-xl font-semibold text-brand-foreground">Login</h1>
       <p className="text-xs text-slate-300">
-        Use your mobile number to login. For demo admin access, use
-        {" "}
-        <span className="font-mono">9999999999</span>.
+        Use your mobile number to login. Real OTP will be sent to your phone.
       </p>
 
       <Card className="space-y-4 bg-slate-900/60 p-4">
@@ -204,29 +245,72 @@ export default function LoginPage() {
             id="phone"
             type="tel"
             inputMode="numeric"
-            maxLength={15}
-            placeholder="10 digit number"
+            maxLength={10}
+            placeholder="10 digit Indian number"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-1">
-          <Label htmlFor="otp">OTP (mock)</Label>
-          <Input
-            id="otp"
-            placeholder="Any 4-6 digit code (mocked)"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
           />
           <p className="text-[10px] text-slate-400">
-            OTP is not actually validated in this demo. Any value will work.
+            Indian mobile numbers only (starts with 6-9)
           </p>
         </div>
 
-        <Button className="w-full" onClick={handleLogin} disabled={loading}>
-          {loading ? "Logging in…" : "Login"}
-        </Button>
+        {!otpSent ? (
+          <Button 
+            className="w-full" 
+            onClick={handleSendOtp} 
+            disabled={loading || !phone || !selectedCity}
+          >
+            {loading ? "Sending OTP..." : "Send OTP"}
+          </Button>
+        ) : (
+          <>
+            <div className="space-y-1">
+              <Label htmlFor="otp">Enter OTP</Label>
+              <Input
+                id="otp"
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="6-digit OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+              />
+              <p className="text-[10px] text-slate-400">
+                Enter the 6-digit OTP sent to your mobile
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <Button 
+                className="flex-1" 
+                onClick={handleLogin} 
+                disabled={loading || !otp}
+              >
+                {loading ? "Verifying..." : "Verify & Login"}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setOtpSent(false);
+                  setOtp("");
+                }}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+            </div>
+
+            <Button 
+              variant="outline" 
+              className="w-full text-xs"
+              onClick={handleSendOtp} 
+              disabled={loading}
+            >
+              {loading ? "Resending..." : "Resend OTP"}
+            </Button>
+          </>
+        )}
       </Card>
     </main>
   );
