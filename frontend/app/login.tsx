@@ -141,6 +141,8 @@ export default function SimpleLoginPage() {
           <Label htmlFor="city">Select your city</Label>
           <select
             id="city"
+            name="city"
+            autoComplete="off"
             value={selectedCity}
             onChange={(e) => setSelectedCity(e.target.value)}
             className="w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -157,10 +159,12 @@ export default function SimpleLoginPage() {
           <Label htmlFor="phone">Mobile number</Label>
           <Input
             id="phone"
+            name="phone"
             type="tel"
             inputMode="numeric"
             maxLength={10}
             placeholder="10 digit Indian number"
+            autoComplete="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
           />
@@ -183,10 +187,12 @@ export default function SimpleLoginPage() {
               <Label htmlFor="otp">Enter OTP</Label>
               <Input
                 id="otp"
+                name="otp"
                 type="text"
                 inputMode="numeric"
                 maxLength={6}
                 placeholder="6-digit OTP"
+                autoComplete="one-time-code"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
               />
