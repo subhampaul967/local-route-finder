@@ -15,15 +15,25 @@ exports.authRouter = (0, express_1.Router)();
 exports.authRouter.post("/login", async (req, res, next) => {
     try {
         const { phone } = (0, schemas_1.parseBody)(schemas_1.loginSchema, req.body);
+        // Check if this is the admin phone number
+        const isAdmin = phone === "1234567890";
         // Upsert user by phone number. New users are regular USERs by default.
         const user = await prisma_1.prisma.user.upsert({
             where: { phone },
             update: {},
             create: {
                 phone,
-                role: "USER",
+                role: isAdmin ? "ADMIN" : "USER",
             },
         });
+        // If this is the admin phone but user wasn't created as admin, update it
+        if (isAdmin && user.role !== "ADMIN") {
+            await prisma_1.prisma.user.update({
+                where: { id: user.id },
+                data: { role: "ADMIN" },
+            });
+            user.role = "ADMIN";
+        }
         const token = jsonwebtoken_1.default.sign({
             sub: user.id,
             phone: user.phone,

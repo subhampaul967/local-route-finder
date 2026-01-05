@@ -14,32 +14,34 @@ const errorHandler_1 = require("../middleware/errorHandler");
 const authRoutes_1 = require("../routes/authRoutes");
 const routesRoutes_1 = require("../routes/routesRoutes");
 const faresRoutes_1 = require("../routes/faresRoutes");
-exports.app = (0, express_1.default)();
+const app = (0, express_1.default)();
+exports.app = app;
 // Basic security hardening
-exports.app.disable("x-powered-by");
-exports.app.use((0, helmet_1.default)());
+app.disable("x-powered-by");
+app.use((0, helmet_1.default)());
 // CORS configuration to allow the Next.js frontend origin
 // In development, reflect the request origin to support multiple dev ports
 // (Next.js may run on 3000/3001/3002). In production, use configured origin.
 const corsOptions = env_1.env.nodeEnv === "development"
     ? { origin: true, credentials: true }
     : { origin: env_1.env.corsOrigin, credentials: true };
-exports.app.use((0, cors_1.default)(corsOptions));
+app.use((0, cors_1.default)(corsOptions));
 // Logging
-exports.app.use((0, morgan_1.default)(env_1.env.nodeEnv === "development" ? "dev" : "combined"));
+app.use((0, morgan_1.default)(env_1.env.nodeEnv === "development" ? "dev" : "combined"));
 // Body parsing with sensible limits for a small JSON API
-exports.app.use(express_1.default.json({ limit: "1mb" }));
+app.use(express_1.default.json({ limit: "1mb" }));
+app.use(express_1.default.urlencoded({ extended: true }));
 // Rate limiting
-exports.app.use(rateLimit_1.generalLimiter);
-exports.app.use("/auth/login", rateLimit_1.authLimiter);
+app.use(rateLimit_1.rateLimitMiddleware);
 // Health check
-exports.app.get("/health", (_req, res) => {
-    res.json({ status: "ok" });
+app.get("/health", (req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 // API routes
-exports.app.use("/auth", authRoutes_1.authRouter);
-exports.app.use("/routes", routesRoutes_1.routesRouter);
-exports.app.use("/fares", faresRoutes_1.faresRouter);
+app.use("/api/auth", authRoutes_1.authRouter);
+app.use("/api/routes", routesRoutes_1.routesRouter);
+app.use("/api/fares", faresRoutes_1.faresRouter);
+app.use("/fares", faresRoutes_1.faresRouter);
 // 404 + error handlers
-exports.app.use(errorHandler_1.notFoundHandler);
-exports.app.use(errorHandler_1.errorHandler);
+app.use(errorHandler_1.notFoundHandler);
+app.use(errorHandler_1.errorHandler);
