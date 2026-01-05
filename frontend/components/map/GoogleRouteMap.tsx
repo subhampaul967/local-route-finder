@@ -16,6 +16,15 @@ declare global {
 const GoogleRouteMap: React.FC<Props> = ({ routes }) => {
   const mapRef = useRef<HTMLDivElement>(null);
 
+  // SSR guard - don't render on server
+  if (typeof window === "undefined") {
+    return (
+      <div className="mt-3 h-72 overflow-hidden rounded-lg border border-slate-800 flex items-center justify-center text-slate-400">
+        Loading map...
+      </div>
+    );
+  }
+
   useEffect(() => {
     if (!window.google || routes.length === 0) return;
 

@@ -2,13 +2,26 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { getCityRoutes } from '@/lib/api';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { CitySelector } from '@/components/CitySelector';
-import GoogleRouteMap from "@/components/map/GoogleRouteMap";
 import type { RouteDTO } from "@local/shared";
+
+// Dynamic import with SSR disabled
+const GoogleRouteMap = dynamic(
+  () => import("@/components/map/GoogleRouteMap"),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="mt-3 h-72 overflow-hidden rounded-lg border border-slate-800 flex items-center justify-center text-slate-400">
+        Loading Google Maps...
+      </div>
+    )
+  }
+);
 
 interface Route {
   id: string;
