@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { CitySelector } from '@/components/CitySelector';
-import { GoogleRouteMap } from "@/components/map/GoogleRouteMap";
+import GoogleRouteMap from "@/components/map/GoogleRouteMap";
 import type { RouteDTO } from "@local/shared";
 
 interface Route {
