@@ -12,13 +12,19 @@ exports.authRouter = (0, express_1.Router)();
 // Admin login endpoint
 exports.authRouter.post("/admin/login", async (req, res, next) => {
     try {
+        console.log('🔐 Admin login request received');
+        console.log('🔍 Request body:', req.body);
         const { username, password } = req.body;
         if (!username || !password) {
+            console.log('❌ Missing username or password');
             return res.status(400).json({ error: "Username and password required" });
         }
         // Check admin credentials from environment variables
         const adminUsername = process.env.ADMIN_USERNAME;
         const adminPassword = process.env.ADMIN_PASSWORD;
+        console.log('🔍 Environment check:');
+        console.log('🔍 ADMIN_USERNAME exists:', !!adminUsername);
+        console.log('🔍 ADMIN_PASSWORD exists:', !!adminPassword);
         if (!adminUsername || !adminPassword) {
             console.error('❌ Admin credentials not configured in environment');
             return res.status(500).json({ error: "Admin authentication not configured" });
@@ -35,7 +41,7 @@ exports.authRouter.post("/admin/login", async (req, res, next) => {
             role: 'ADMIN'
         }, env_1.env.jwtSecret, { expiresIn: '24h' });
         console.log(`✅ Admin login successful: ${username}`);
-        return res.json({
+        const response = {
             message: "Admin login successful",
             token,
             user: {
@@ -43,11 +49,14 @@ exports.authRouter.post("/admin/login", async (req, res, next) => {
                 username: adminUsername,
                 role: 'ADMIN',
             }
-        });
+        };
+        console.log('🔍 Sending response:', JSON.stringify(response, null, 2));
+        return res.json(response);
     }
     catch (err) {
         console.error('❌ Admin login error:', err);
-        return next(err);
+        console.error('❌ Error stack:', err.stack);
+        return res.status(500).json({ error: "Internal server error during login" });
     }
 });
 // Verify admin token endpoint

@@ -21,6 +21,9 @@ export default function AdminLoginPage() {
 
     setLoading(true);
     try {
+      console.log('🔐 Attempting admin login...');
+      console.log('🔍 API URL:', process.env.NEXT_PUBLIC_API_BASE_URL);
+      
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/admin/login`, {
         method: 'POST',
         headers: {
@@ -29,11 +32,34 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json();
+      console.log('🔍 Response status:', response.status);
+      console.log('🔍 Content-Type:', response.headers.get('content-type'));
+
+      // Get response text first to debug
+      const responseText = await response.text();
+      console.log('🔍 Response text:', responseText);
 
       if (!response.ok) {
-        throw new Error(data.error || 'Admin login failed');
+        // Try to parse as JSON, fallback to text
+        let errorData;
+        try {
+          errorData = JSON.parse(responseText);
+        } catch {
+          errorData = { error: responseText || 'Unknown error' };
+        }
+        throw new Error(errorData.error || 'Admin login failed');
       }
+
+      // Parse successful response
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (err) {
+        console.error('❌ Failed to parse response as JSON:', err);
+        throw new Error('Invalid response from server');
+      }
+
+      console.log('✅ Login response:', data);
 
       // Store admin token
       localStorage.setItem('admin_token', data.token);
@@ -42,7 +68,7 @@ export default function AdminLoginPage() {
       alert('Admin login successful!');
       router.push('/admin/routes');
     } catch (err: any) {
-      console.error('Admin login error:', err);
+      console.error('❌ Admin login error:', err);
       alert(err.message || "Admin login failed. Please try again.");
     } finally {
       setLoading(false);
