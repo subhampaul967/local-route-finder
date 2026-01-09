@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { useAdminStore } from "@/stores/adminStore";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -79,9 +80,13 @@ export default function AdminLoginPage() {
 
       console.log('✅ Login response:', data);
 
-      // Store admin token
+      // Store admin token and user in Zustand store
       localStorage.setItem('admin_token', data.token);
       localStorage.setItem('admin_user', JSON.stringify(data.user));
+      
+      // Update Zustand store
+      const { setAdmin } = useAdminStore.getState();
+      setAdmin(data.user, data.token);
       
       alert('Admin login successful!');
       router.push('/admin/routes');
