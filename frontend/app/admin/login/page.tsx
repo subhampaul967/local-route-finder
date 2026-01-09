@@ -26,6 +26,22 @@ export default function AdminLoginPage() {
       const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://local-route-finder-backend.onrender.com';
       console.log('🔍 API URL:', apiUrl);
       
+      // First test if backend is reachable
+      try {
+        console.log('🔍 Testing backend connectivity...');
+        const healthResponse = await fetch(`${apiUrl}/health`, {
+          method: 'GET',
+          mode: 'cors',
+        });
+        console.log('🔍 Health check status:', healthResponse.status);
+        if (!healthResponse.ok) {
+          throw new Error(`Backend health check failed: ${healthResponse.status}`);
+        }
+      } catch (healthError) {
+        console.error('❌ Backend connectivity test failed:', healthError);
+        throw new Error('Backend service is not accessible. Please check if the backend is running.');
+      }
+      
       const response = await fetch(`${apiUrl}/api/auth/admin/login`, {
         method: 'POST',
         headers: {

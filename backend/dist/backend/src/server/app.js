@@ -35,7 +35,24 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use(rateLimit_1.rateLimitMiddleware);
 // Health check
 app.get("/health", (req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
+    console.log('🏥 Health check requested');
+    try {
+        res.json({ status: "ok", timestamp: new Date().toISOString() });
+    }
+    catch (error) {
+        console.error('❌ Health check error:', error);
+        res.status(500).json({ status: "error", message: "Health check failed" });
+    }
+});
+// Root route for debugging
+app.get("/", (req, res) => {
+    console.log('🏠 Root route requested');
+    res.json({
+        message: "Local Route Finder Backend API",
+        status: "running",
+        version: "1.0.1",
+        timestamp: new Date().toISOString()
+    });
 });
 // API routes
 app.use("/api/auth", authRoutes_1.authRouter);
