@@ -1,13 +1,16 @@
-import { createServer } from "http";
 import { app } from "./server/app";
 import { env } from "./config/env";
 
-// Node HTTP server wrapping the Express app. This makes it easy to plug in
-// WebSockets or other protocols later if needed.
+const PORT = env.port || 4000;
 
-const server = createServer(app);
+console.log('🚀 Starting Local Route Finder Backend...');
+console.log(`📋 Port: ${PORT}`);
+console.log(`📋 Environment: ${env.nodeEnv}`);
+console.log(`📋 Database URL: ${env.databaseUrl ? 'SET' : 'NOT SET'}`);
+console.log(`📋 JWT Secret: ${env.jwtSecret ? 'SET' : 'NOT SET'}`);
 
-server.listen(env.port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Backend API running on http://localhost:${env.port}`);
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`🌐 Health check: http://localhost:${PORT}/health`);
+  console.log(`🌐 API base: http://localhost:${PORT}/api`);
 });
