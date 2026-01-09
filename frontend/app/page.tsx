@@ -100,7 +100,7 @@ export default function HomePage() {
                         variant="ghost" 
                         className="w-full justify-start text-purple-400 hover:bg-purple-500/10"
                       >
-                        ⚙️ Admin Panel
+                        🛠️ Admin Dashboard
                       </Button>
                     </Link>
                     <Button 
