@@ -46,15 +46,36 @@ app.get("/health", (req: Request, res: Response) => {
   }
 });
 
+// Test endpoint
+app.get("/test", (req: Request, res: Response) => {
+  console.log('🧪 Test endpoint requested');
+  try {
+    res.json({ 
+      message: "Backend is working!",
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+      database: !!process.env.DATABASE_URL
+    });
+  } catch (error) {
+    console.error('❌ Test endpoint error:', error);
+    res.status(500).json({ message: "Test failed" });
+  }
+});
+
 // Root route for debugging
 app.get("/", (req: Request, res: Response) => {
   console.log('🏠 Root route requested');
-  res.json({ 
-    message: "Local Route Finder Backend API",
-    status: "running",
-    version: "1.0.1",
-    timestamp: new Date().toISOString()
-  });
+  try {
+    res.json({ 
+      message: "Local Route Finder Backend API",
+      status: "running",
+      version: "1.0.1",
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('❌ Root route error:', error);
+    res.status(500).json({ message: "API error" });
+  }
 });
 
 // API routes

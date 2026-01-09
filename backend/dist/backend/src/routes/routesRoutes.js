@@ -12,6 +12,8 @@ exports.routesRouter = (0, express_1.Router)();
 // Admin routes - require authentication
 exports.routesRouter.get("/admin/all", auth_1.authenticate, auth_1.requireAdmin, async (_req, res, next) => {
     try {
+        console.log('🔍 Admin routes request received');
+        console.log('🔍 Database connected:', !!prisma_1.prisma);
         const routes = (await prisma_1.prisma.route.findMany({
             include: {
                 fromLocation: true,
@@ -22,13 +24,23 @@ exports.routesRouter.get("/admin/all", auth_1.authenticate, auth_1.requireAdmin,
                 createdAt: "desc",
             },
         }));
+        console.log('📊 Found routes:', routes.length);
+        console.log('📊 Routes data:', routes.map(r => ({ id: r.id, from: r.fromLocation.name, to: r.toLocation.name, status: r.status })));
         return res.json({
             routes: routes.map(dtoMapper_1.mapRouteToDTO),
             totalRoutes: routes.length
         });
     }
     catch (err) {
-        return next(err);
+        console.error('❌ Admin routes error:', err);
+        console.error('❌ Error details:', {
+            message: err.message,
+            stack: err.stack
+        });
+        return res.status(500).json({
+            error: "Failed to load routes",
+            details: process.env.NODE_ENV === 'development' ? err.message : "Internal server error"
+        });
     }
 });
 // GET /city - get all routes in selected city

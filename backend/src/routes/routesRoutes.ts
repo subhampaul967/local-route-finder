@@ -20,6 +20,9 @@ routesRouter.get(
   requireAdmin,
   async (_req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log('🔍 Admin routes request received');
+      console.log('🔍 Database connected:', !!prisma);
+      
       const routes = (await prisma.route.findMany({
         include: {
           fromLocation: true,
@@ -31,12 +34,23 @@ routesRouter.get(
         },
       })) as RouteWithRelations[];
 
+      console.log('📊 Found routes:', routes.length);
+      console.log('📊 Routes data:', routes.map(r => ({ id: r.id, from: r.fromLocation.name, to: r.toLocation.name, status: r.status })));
+
       return res.json({ 
         routes: routes.map(mapRouteToDTO),
         totalRoutes: routes.length 
       });
-    } catch (err) {
-      return next(err);
+    } catch (err: any) {
+      console.error('❌ Admin routes error:', err);
+      console.error('❌ Error details:', {
+        message: err.message,
+        stack: err.stack
+      });
+      return res.status(500).json({ 
+        error: "Failed to load routes",
+        details: process.env.NODE_ENV === 'development' ? err.message : "Internal server error"
+      });
     }
   }
 );
