@@ -203,6 +203,9 @@ exports.routesRouter.get("/", async (req, res, next) => {
 // Create route - authentication removed for open access
 exports.routesRouter.post("/", async (req, res, next) => {
     try {
+        console.log('🔍 Route submission request received');
+        console.log('🔍 Request body:', req.body);
+        console.log('🔍 User info:', req.user);
         const body = (0, schemas_1.parseBody)(schemas_1.createRouteSchema, req.body);
         // Resolve or create locations from either IDs or human-friendly names.
         const resolveLocation = async (id, name) => {
@@ -253,12 +256,12 @@ exports.routesRouter.post("/", async (req, res, next) => {
                         },
                     }
                     : undefined,
-                submissions: {
+                submissions: req.user?.id ? {
                     create: {
                         userId: req.user.id,
                         status: "PENDING",
                     },
-                },
+                } : undefined,
             },
             include: {
                 fromLocation: true,
@@ -274,7 +277,15 @@ exports.routesRouter.post("/", async (req, res, next) => {
         });
     }
     catch (err) {
-        return next(err);
+        console.error('❌ Route creation error:', err);
+        console.error('❌ Error details:', {
+            message: err.message,
+            stack: err.stack
+        });
+        return res.status(500).json({
+            error: "Failed to create route",
+            details: process.env.NODE_ENV === 'development' ? err.message : "Internal server error"
+        });
     }
 });
 // View pending routes - require admin authentication

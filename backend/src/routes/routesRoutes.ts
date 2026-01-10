@@ -243,6 +243,10 @@ routesRouter.post(
   "/",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log('🔍 Route submission request received');
+      console.log('🔍 Request body:', req.body);
+      console.log('🔍 User info:', req.user);
+      
       const body = parseBody(createRouteSchema, req.body);
 
       // Resolve or create locations from either IDs or human-friendly names.
@@ -303,12 +307,12 @@ routesRouter.post(
                   },
                 }
               : undefined,
-          submissions: {
+          submissions: req.user?.id ? {
             create: {
-              userId: req.user!.id,
+              userId: req.user.id,
               status: "PENDING",
             },
-          },
+          } : undefined,
         },
         include: {
           fromLocation: true,
@@ -323,8 +327,16 @@ routesRouter.post(
           routeValidation: validation,
         },
       });
-    } catch (err) {
-      return next(err);
+    } catch (err: any) {
+      console.error('❌ Route creation error:', err);
+      console.error('❌ Error details:', {
+        message: err.message,
+        stack: err.stack
+      });
+      return res.status(500).json({ 
+        error: "Failed to create route",
+        details: process.env.NODE_ENV === 'development' ? err.message : "Internal server error"
+      });
     }
   }
 );
