@@ -130,7 +130,11 @@ export default function AdminRoutesPage() {
         statusText: err.response?.statusText,
         data: err.response?.data
       });
-      alert(`Failed to delete route: ${err.message || 'Unknown error'}`);
+      
+      const errorMessage = err.response?.data?.error || err.message || 'Unknown error';
+      const errorDetails = err.response?.data?.details || '';
+      
+      alert(`Failed to delete route: ${errorMessage}${errorDetails ? ` (${errorDetails})` : ''}`);
     } finally {
       setDeleteLoading(null);
     }

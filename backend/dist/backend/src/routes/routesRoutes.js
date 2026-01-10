@@ -337,6 +337,10 @@ exports.routesRouter.delete("/:id", auth_1.authenticate, auth_1.requireAdmin, as
         const { id } = req.params;
         console.log('DELETE route request for ID:', id);
         console.log('User:', req.user);
+        if (!id) {
+            console.log('No route ID provided');
+            return res.status(400).json({ error: "Route ID is required" });
+        }
         // First check if route exists
         const route = await prisma_1.prisma.route.findUnique({
             where: { id },
@@ -344,6 +348,7 @@ exports.routesRouter.delete("/:id", auth_1.authenticate, auth_1.requireAdmin, as
                 fares: true,
                 fromLocation: true,
                 toLocation: true,
+                submissions: true,
             },
         });
         if (!route) {
@@ -351,7 +356,17 @@ exports.routesRouter.delete("/:id", auth_1.authenticate, auth_1.requireAdmin, as
             return res.status(404).json({ error: "Route not found" });
         }
         console.log('Found route to delete:', route.fromLocation.name, '→', route.toLocation.name);
+        console.log('Route has fares:', route.fares.length);
+        console.log('Route has submissions:', route.submissions.length);
+        // Delete related submissions first (to avoid foreign key constraints)
+        if (route.submissions.length > 0) {
+            console.log('Deleting submissions first...');
+            await prisma_1.prisma.submission.deleteMany({
+                where: { routeId: id },
+            });
+        }
         // Delete the route (fares will be deleted due to cascade)
+        console.log('Deleting route...');
         await prisma_1.prisma.route.delete({
             where: { id },
         });
@@ -363,7 +378,16 @@ exports.routesRouter.delete("/:id", auth_1.authenticate, auth_1.requireAdmin, as
     }
     catch (err) {
         console.error('Delete route error:', err);
-        return next(err);
+        console.error('Delete route error details:', {
+            message: err.message,
+            stack: err.stack,
+            code: err.code,
+            meta: err.meta
+        });
+        return res.status(500).json({
+            error: "Failed to delete route",
+            details: process.env.NODE_ENV === 'development' ? err.message : "Internal server error"
+        });
     }
 });
 // Cleanup recent approved routes - require admin authentication
