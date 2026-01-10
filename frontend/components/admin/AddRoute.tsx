@@ -1,0 +1,216 @@
+'use client';
+
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { submitRoute } from '@/lib/api';
+
+interface AddRouteProps {
+  onRouteAdded: () => void;
+}
+
+export function AddRoute({ onRouteAdded }: AddRouteProps) {
+  const [fromLocation, setFromLocation] = useState('');
+  const [toLocation, setToLocation] = useState('');
+  const [vehicleType, setVehicleType] = useState('AUTO');
+  const [autoColor, setAutoColor] = useState('');
+  const [minFare, setMinFare] = useState('');
+  const [maxFare, setMaxFare] = useState('');
+  const [fareNotes, setFareNotes] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!fromLocation.trim() || !toLocation.trim()) {
+      alert('Please fill in both From and To locations.');
+      return;
+    }
+
+    if (!minFare || !maxFare) {
+      alert('Please fill in both minimum and maximum fare.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      const routeData = {
+        fromName: fromLocation.trim(),
+        toName: toLocation.trim(),
+        vehicleType,
+        autoColor: vehicleType === 'AUTO' ? autoColor : undefined,
+        minFare: parseFloat(minFare),
+        maxFare: parseFloat(maxFare),
+        notes: fareNotes.trim() || undefined,
+      };
+
+      const response = await submitRoute(routeData);
+      console.log('Route added successfully:', response.data);
+      
+      // Reset form
+      setFromLocation('');
+      setToLocation('');
+      setVehicleType('AUTO');
+      setAutoColor('');
+      setMinFare('');
+      setMaxFare('');
+      setFareNotes('');
+      
+      alert('Route added successfully!');
+      onRouteAdded();
+    } catch (err: any) {
+      console.error('Add route error:', err);
+      alert(`Failed to add route: ${err.message || 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Card className="p-6 bg-slate-900/60">
+      <h3 className="text-lg font-semibold text-brand-foreground mb-4">
+        ➕ Add New Route
+      </h3>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              From Location
+            </label>
+            <Input
+              type="text"
+              value={fromLocation}
+              onChange={(e) => setFromLocation(e.target.value)}
+              placeholder="Enter starting location"
+              className="w-full p-2 bg-slate-700 border border-slate-600 rounded text-white"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              To Location
+            </label>
+            <Input
+              type="text"
+              value={toLocation}
+              onChange={(e) => setToLocation(e.target.value)}
+              placeholder="Enter destination location"
+              className="w-full p-2 bg-slate-700 border border-slate-600 rounded text-white"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Vehicle Type
+            </label>
+            <select
+              value={vehicleType}
+              onChange={(e) => setVehicleType(e.target.value)}
+              className="w-full p-2 bg-slate-700 border border-slate-600 rounded text-white"
+            >
+              <option value="AUTO">🛺 Auto</option>
+              <option value="BUS">🚌 Bus</option>
+            </select>
+          </div>
+          
+          {vehicleType === 'AUTO' && (
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Auto Color
+              </label>
+              <Input
+                type="text"
+                value={autoColor}
+                onChange={(e) => setAutoColor(e.target.value)}
+                placeholder="e.g., Yellow, White, Blue"
+                className="w-full p-2 bg-slate-700 border border-slate-600 rounded text-white"
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Minimum Fare (₹)
+            </label>
+            <Input
+              type="number"
+              value={minFare}
+              onChange={(e) => setMinFare(e.target.value)}
+              placeholder="e.g., 20"
+              min="0"
+              step="0.01"
+              className="w-full p-2 bg-slate-700 border border-slate-600 rounded text-white"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Maximum Fare (₹)
+            </label>
+            <Input
+              type="number"
+              value={maxFare}
+              onChange={(e) => setMaxFare(e.target.value)}
+              placeholder="e.g., 50"
+              min="0"
+              step="0.01"
+              className="w-full p-2 bg-slate-700 border border-slate-600 rounded text-white"
+              required
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-300 mb-2">
+            Fare Notes (Optional)
+          </label>
+          <Textarea
+            value={fareNotes}
+            onChange={(e) => setFareNotes(e.target.value)}
+            placeholder="Add notes about this route's fare..."
+            className="w-full p-2 bg-slate-700 border border-slate-600 rounded text-white"
+            rows={3}
+          />
+        </div>
+
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="bg-green-500 text-white hover:bg-green-600"
+          >
+            {loading ? 'Adding Route...' : '➕ Add Route'}
+          </Button>
+          
+          <Button
+            type="button"
+            onClick={() => {
+              setFromLocation('');
+              setToLocation('');
+              setVehicleType('AUTO');
+              setAutoColor('');
+              setMinFare('');
+              setMaxFare('');
+              setFareNotes('');
+            }}
+            variant="outline"
+            className="border-gray-500 text-gray-400 hover:bg-gray-500/10"
+          >
+            Clear
+          </Button>
+        </div>
+      </form>
+    </Card>
+  );
+}
