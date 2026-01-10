@@ -358,23 +358,45 @@ exports.routesRouter.delete("/:id", auth_1.authenticate, auth_1.requireAdmin, as
         console.log('Found route to delete:', route.fromLocation.name, '→', route.toLocation.name);
         console.log('Route has fares:', route.fares.length);
         console.log('Route has submissions:', route.submissions.length);
-        // Delete related submissions first (to avoid foreign key constraints)
-        if (route.submissions.length > 0) {
-            console.log('Deleting submissions first...');
-            await prisma_1.prisma.submission.deleteMany({
-                where: { routeId: id },
+        try {
+            // Delete related submissions first (to avoid foreign key constraints)
+            if (route.submissions.length > 0) {
+                console.log('Deleting submissions first...');
+                const deleteSubmissionsResult = await prisma_1.prisma.submission.deleteMany({
+                    where: { routeId: id },
+                });
+                console.log('Deleted submissions:', deleteSubmissionsResult.count);
+            }
+            // Delete related fares
+            if (route.fares.length > 0) {
+                console.log('Deleting fares...');
+                const deleteFaresResult = await prisma_1.prisma.fare.deleteMany({
+                    where: { routeId: id },
+                });
+                console.log('Deleted fares:', deleteFaresResult.count);
+            }
+            // Delete the route
+            console.log('Deleting route...');
+            await prisma_1.prisma.route.delete({
+                where: { id },
+            });
+            console.log('Route deleted successfully:', id);
+            return res.json({
+                message: "Route deleted successfully",
+                deletedRoute: (0, dtoMapper_1.mapRouteToDTO)(route)
             });
         }
-        // Delete the route (fares will be deleted due to cascade)
-        console.log('Deleting route...');
-        await prisma_1.prisma.route.delete({
-            where: { id },
-        });
-        console.log('Route deleted successfully:', id);
-        return res.json({
-            message: "Route deleted successfully",
-            deletedRoute: (0, dtoMapper_1.mapRouteToDTO)(route)
-        });
+        catch (deleteError) {
+            console.error('Error during deletion process:', deleteError);
+            // If deletion fails, try to get more specific error info
+            if (deleteError.code === 'P2003') {
+                return res.status(400).json({
+                    error: "Cannot delete route - it's referenced by other records",
+                    details: "This route may be referenced by other database records that cannot be automatically deleted"
+                });
+            }
+            throw deleteError;
+        }
     }
     catch (err) {
         console.error('Delete route error:', err);
