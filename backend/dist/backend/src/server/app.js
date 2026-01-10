@@ -14,6 +14,7 @@ const errorHandler_1 = require("../middleware/errorHandler");
 const authRoutes_1 = require("../routes/authRoutes");
 const routesRoutes_1 = require("../routes/routesRoutes");
 const faresRoutes_1 = require("../routes/faresRoutes");
+const locationRoutes_1 = __importDefault(require("../routes/locationRoutes"));
 const app = (0, express_1.default)();
 exports.app = app;
 // Basic security hardening
@@ -81,6 +82,7 @@ app.use("/api/auth", authRoutes_1.authRouter);
 app.use("/api/routes", routesRoutes_1.routesRouter);
 app.use("/api/fares", faresRoutes_1.faresRouter);
 app.use("/fares", faresRoutes_1.faresRouter);
+app.use("/api/locations", locationRoutes_1.default);
 // 404 + error handlers
 app.use(errorHandler_1.notFoundHandler);
 app.use(errorHandler_1.errorHandler);

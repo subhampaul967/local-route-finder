@@ -5,9 +5,10 @@ import morgan from "morgan";
 import { env } from "../config/env";
 import { rateLimitMiddleware } from "../middleware/rateLimit";
 import { errorHandler, notFoundHandler } from "../middleware/errorHandler";
-import { authRouter } from "../routes/authRoutes";
-import { routesRouter } from "../routes/routesRoutes";
-import { faresRouter } from "../routes/faresRoutes";
+import { authRouter } from '../routes/authRoutes';
+import { routesRouter } from '../routes/routesRoutes';
+import { faresRouter } from '../routes/faresRoutes';
+import locationRoutes from '../routes/locationRoutes';
 
 const app = express();
 
@@ -83,6 +84,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/routes", routesRouter);
 app.use("/api/fares", faresRouter);
 app.use("/fares", faresRouter);
+app.use("/api/locations", locationRoutes);
 
 // 404 + error handlers
 app.use(notFoundHandler);

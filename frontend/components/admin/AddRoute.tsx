@@ -6,14 +6,23 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { submitRoute, setAuthToken } from '@/lib/api';
+import { LocationSearch } from './LocationSearch';
+
+interface Location {
+  id: string;
+  name: string;
+  type: string;
+  lat?: number;
+  lng?: number;
+}
 
 interface AddRouteProps {
   onRouteAdded: () => void;
 }
 
 export function AddRoute({ onRouteAdded }: AddRouteProps) {
-  const [fromLocation, setFromLocation] = useState('');
-  const [toLocation, setToLocation] = useState('');
+  const [fromLocation, setFromLocation] = useState<Location | null>(null);
+  const [toLocation, setToLocation] = useState<Location | null>(null);
   const [vehicleType, setVehicleType] = useState('AUTO');
   const [autoColor, setAutoColor] = useState('');
   const [minFare, setMinFare] = useState('');
@@ -24,8 +33,8 @@ export function AddRoute({ onRouteAdded }: AddRouteProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!fromLocation.trim() || !toLocation.trim()) {
-      alert('Please fill in both From and To locations.');
+    if (!fromLocation || !toLocation) {
+      alert('Please select both From and To locations.');
       return;
     }
 
@@ -50,8 +59,8 @@ export function AddRoute({ onRouteAdded }: AddRouteProps) {
       }
       
       const routeData = {
-        fromName: fromLocation.trim(),
-        toName: toLocation.trim(),
+        fromName: fromLocation.name,
+        toName: toLocation.name,
         vehicleType,
         autoColor: vehicleType === 'AUTO' ? autoColor : undefined,
         minFare: parseFloat(minFare),
@@ -64,8 +73,8 @@ export function AddRoute({ onRouteAdded }: AddRouteProps) {
       console.log('Route added successfully:', response.data);
       
       // Reset form
-      setFromLocation('');
-      setToLocation('');
+      setFromLocation(null);
+      setToLocation(null);
       setVehicleType('AUTO');
       setAutoColor('');
       setMinFare('');
@@ -96,33 +105,19 @@ export function AddRoute({ onRouteAdded }: AddRouteProps) {
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              From Location
-            </label>
-            <Input
-              type="text"
-              value={fromLocation}
-              onChange={(e) => setFromLocation(e.target.value)}
-              placeholder="Enter starting location"
-              className="w-full p-2 bg-slate-700 border border-slate-600 rounded text-white"
-              required
-            />
-          </div>
+          <LocationSearch
+            label="From Location"
+            placeholder="Enter starting location"
+            value={fromLocation?.name || ''}
+            onChange={setFromLocation}
+          />
           
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              To Location
-            </label>
-            <Input
-              type="text"
-              value={toLocation}
-              onChange={(e) => setToLocation(e.target.value)}
-              placeholder="Enter destination location"
-              className="w-full p-2 bg-slate-700 border border-slate-600 rounded text-white"
-              required
-            />
-          </div>
+          <LocationSearch
+            label="To Location"
+            placeholder="Enter destination location"
+            value={toLocation?.name || ''}
+            onChange={setToLocation}
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -215,8 +210,8 @@ export function AddRoute({ onRouteAdded }: AddRouteProps) {
           <Button
             type="button"
             onClick={() => {
-              setFromLocation('');
-              setToLocation('');
+              setFromLocation(null);
+              setToLocation(null);
               setVehicleType('AUTO');
               setAutoColor('');
               setMinFare('');
