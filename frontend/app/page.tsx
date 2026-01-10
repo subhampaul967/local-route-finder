@@ -58,6 +58,22 @@ export default function HomePage() {
   return (
     <SimpleAppShell>
       <main className="mx-auto flex max-w-sm flex-1 flex-col gap-4 px-4 py-6">
+        {/* City Selection - Always Visible */}
+        <Card className="p-6 bg-slate-900/60 mb-4">
+          <div className="text-center mb-4">
+            <h2 className="text-xl font-semibold text-brand-foreground mb-2">
+              🏙️ Select Your City
+            </h2>
+            <p className="text-sm text-slate-400">
+              Choose your city to find available routes
+            </p>
+          </div>
+          <CitySelector 
+            currentCity={selectedCity} 
+            onCityChange={handleCityChange}
+          />
+        </Card>
+
         <Card className="p-6 bg-slate-900/60">
           <div className="mb-4 text-center">
             <h1 className="text-2xl font-semibold text-brand-foreground">
@@ -68,14 +84,23 @@ export default function HomePage() {
             </p>
           </div>
 
-          <SearchForm
-            from={from}
-            to={to}
-            onChangeFrom={setFrom}
-            onChangeTo={setTo}
-            onSubmit={handleSubmit}
-            showSubmitButton
-          />
+          {/* Show search form only when city is selected */}
+          {selectedCity ? (
+            <SearchForm
+              from={from}
+              to={to}
+              onChangeFrom={setFrom}
+              onChangeTo={setTo}
+              onSubmit={handleSubmit}
+              showSubmitButton
+            />
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-slate-400 text-lg">
+                📍 Please select a city above to search for routes
+              </p>
+            </div>
+          )}
         </Card>
 
         {/* Admin Menu */}
@@ -134,15 +159,7 @@ export default function HomePage() {
           )}
         </div>
 
-        {selectedCity && (
-          <div className="text-center">
-            <CitySelector 
-              currentCity={selectedCity} 
-              onCityChange={handleCityChange}
-            />
-          </div>
-        )}
-
+        {/* View All Routes Button - Only when city is selected */}
         {selectedCity && (
           <div className="text-center">
             <Button 
