@@ -35,6 +35,10 @@ export default function AdminRoutesPage() {
   const [fareNotes, setFareNotes] = useState('');
   const [showAddRoute, setShowAddRoute] = useState(false);
 
+  // Debug logging
+  console.log('AdminRoutesPage - showAddRoute:', showAddRoute);
+  console.log('AdminRoutesPage - AddRoute component:', AddRoute);
+
   // Check admin authentication
   useEffect(() => {
     if (!isAdmin()) {
@@ -244,7 +248,11 @@ export default function AdminRoutesPage() {
         </div>
         <div className="flex gap-2">
           <Button
-            onClick={() => setShowAddRoute(!showAddRoute)}
+            onClick={() => {
+              console.log('Add Route button clicked - current state:', showAddRoute);
+              setShowAddRoute(!showAddRoute);
+              console.log('Add Route button clicked - new state:', !showAddRoute);
+            }}
             className="bg-green-500 text-white hover:bg-green-600"
           >
             {showAddRoute ? '📋 View Routes' : '➕ Add Route'}
