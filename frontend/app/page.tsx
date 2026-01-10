@@ -93,6 +93,14 @@ export default function HomePage() {
           {showAdminMenu && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-50">
               <div className="p-2 space-y-1">
+                <Link href="/add-route">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-green-400 hover:bg-green-500/10"
+                  >
+                    ➕ Add Route
+                  </Button>
+                </Link>
                 {isAdmin() ? (
                   <>
                     <Link href="/admin/routes">
