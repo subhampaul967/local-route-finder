@@ -62,7 +62,20 @@ export interface SubmitRoutePayload {
 }
 
 export const submitRoute = (payload: SubmitRoutePayload) => {
-  return api.post("/api/routes", payload);
+  console.log('Submitting route with payload:', payload);
+  console.log('API base URL:', api.defaults.baseURL);
+  console.log('Auth header:', api.defaults.headers.Authorization);
+  
+  return api.post("/api/routes", payload).catch(err => {
+    console.error('Submit route API error:', err);
+    console.error('Submit route API error details:', {
+      message: err.message,
+      status: err.response?.status,
+      statusText: err.response?.statusText,
+      data: err.response?.data
+    });
+    throw err;
+  });
 };
 
 export const fetchPendingRoutes = () => {

@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { submitRoute } from '@/lib/api';
+import { submitRoute, setAuthToken } from '@/lib/api';
 
 interface AddRouteProps {
   onRouteAdded: () => void;
@@ -37,6 +37,18 @@ export function AddRoute({ onRouteAdded }: AddRouteProps) {
     try {
       setLoading(true);
       
+      // Set authentication token if available (for admin users)
+      const adminToken = localStorage.getItem('admin_token');
+      const userToken = localStorage.getItem('auth_token');
+      const token = adminToken || userToken;
+      
+      if (token) {
+        setAuthToken(token);
+        console.log('Authentication token set for route submission');
+      } else {
+        console.log('No authentication token found, submitting as public user');
+      }
+      
       const routeData = {
         fromName: fromLocation.trim(),
         toName: toLocation.trim(),
@@ -47,6 +59,7 @@ export function AddRoute({ onRouteAdded }: AddRouteProps) {
         notes: fareNotes.trim() || undefined,
       };
 
+      console.log('Submitting route data:', routeData);
       const response = await submitRoute(routeData);
       console.log('Route added successfully:', response.data);
       
@@ -59,11 +72,17 @@ export function AddRoute({ onRouteAdded }: AddRouteProps) {
       setMaxFare('');
       setFareNotes('');
       
-      alert('Route added successfully!');
+      alert('Route submitted successfully! It will be reviewed by admin.');
       onRouteAdded();
     } catch (err: any) {
       console.error('Add route error:', err);
-      alert(`Failed to add route: ${err.message || 'Unknown error'}`);
+      console.error('Error details:', {
+        message: err.message,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data
+      });
+      alert(`Failed to submit route: ${err.response?.data?.error || err.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
