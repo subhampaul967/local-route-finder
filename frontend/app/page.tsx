@@ -74,18 +74,19 @@ export default function HomePage() {
           />
         </Card>
 
-        <Card className="p-6 bg-slate-900/60">
-          <div className="mb-4 text-center">
-            <h1 className="text-2xl font-semibold text-brand-foreground">
-              Local Bus / Shared Auto Finder
-            </h1>
-            <p className="text-sm text-slate-400 mt-2">
-              Community-sourced local transport wiki for shared autos and private buses in Indian towns.
-            </p>
-          </div>
+        {/* Main Content - Only when city is selected */}
+        {selectedCity && (
+          <Card className="p-6 bg-slate-900/60">
+            <div className="mb-4 text-center">
+              <h1 className="text-2xl font-semibold text-brand-foreground">
+                Local Bus / Shared Auto Finder
+              </h1>
+              <p className="text-sm text-slate-400 mt-2">
+                Community-sourced local transport wiki for shared autos and private buses in Indian towns.
+              </p>
+            </div>
 
-          {/* Show search form only when city is selected */}
-          {selectedCity ? (
+            {/* Show search form only when city is selected */}
             <SearchForm
               from={from}
               to={to}
@@ -94,14 +95,19 @@ export default function HomePage() {
               onSubmit={handleSubmit}
               showSubmitButton
             />
-          ) : (
+          </Card>
+        )}
+
+        {/* Show message when no city is selected */}
+        {!selectedCity && (
+          <Card className="p-6 bg-slate-900/60">
             <div className="text-center py-8">
               <p className="text-slate-400 text-lg">
                 📍 Please select a city above to search for routes
               </p>
             </div>
-          )}
-        </Card>
+          </Card>
+        )}
 
         {/* Admin Menu */}
         <div className="relative">
