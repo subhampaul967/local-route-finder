@@ -75,16 +75,32 @@ export default function AdminRoutesPage() {
       
       // Set authentication token
       const adminToken = localStorage.getItem('admin_token');
+      console.log('Admin token exists:', !!adminToken);
+      console.log('Admin token preview:', adminToken?.substring(0, 20) + '...');
+      
       if (adminToken) {
         setAuthToken(adminToken);
+        console.log('Auth token set successfully');
+      } else {
+        throw new Error('No admin token found');
       }
       
+      console.log('Deleting route:', routeId);
       const response = await deleteRoute(routeId);
+      console.log('Delete response:', response.data);
+      
       setRoutes(routes.filter(route => route.id !== routeId));
       console.log('Route deleted successfully');
-    } catch (err) {
+      alert('Route deleted successfully!');
+    } catch (err: any) {
       console.error('Delete error:', err);
-      alert('Failed to delete route. Check console for details.');
+      console.error('Error details:', {
+        message: err.message,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data
+      });
+      alert(`Failed to delete route: ${err.message || 'Unknown error'}`);
     } finally {
       setDeleteLoading(null);
     }

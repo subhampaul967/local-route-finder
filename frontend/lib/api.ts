@@ -35,7 +35,17 @@ export const deleteRoute = (id: string) => {
   console.log('Making DELETE request to route:', id);
   console.log('API base URL:', api.defaults.baseURL);
   console.log('Auth header:', api.defaults.headers.Authorization);
-  return api.delete(`/api/routes/${id}`);
+  
+  return api.delete(`/api/routes/${id}`).catch(err => {
+    console.error('Delete API error:', err);
+    console.error('Delete API error details:', {
+      message: err.message,
+      status: err.response?.status,
+      statusText: err.response?.statusText,
+      data: err.response?.data
+    });
+    throw err;
+  });
 };
 
 export interface SubmitRoutePayload {
