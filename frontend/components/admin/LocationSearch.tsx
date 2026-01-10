@@ -19,9 +19,10 @@ interface LocationSearchProps {
   value: string;
   onChange: (location: Location) => void;
   onTextChange?: (text: string) => void;
+  onAddLocation?: () => void;
 }
 
-export function LocationSearch({ label, placeholder, value, onChange, onTextChange }: LocationSearchProps) {
+export function LocationSearch({ label, placeholder, value, onChange, onTextChange, onAddLocation }: LocationSearchProps) {
   const [searchText, setSearchText] = useState(value);
   const [suggestions, setSuggestions] = useState<Location[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -104,12 +105,32 @@ export function LocationSearch({ label, placeholder, value, onChange, onTextChan
                 <div className="text-xs text-slate-400">{location.type}</div>
               </div>
             ))}
+            
+            {onAddLocation && (
+              <div
+                className="p-3 cursor-pointer hover:bg-slate-700 border-t border-slate-600 bg-slate-750"
+                onClick={onAddLocation}
+              >
+                <div className="font-medium text-green-400">➕ Add New Location</div>
+                <div className="text-xs text-slate-400">Create "{searchText}" as new location</div>
+              </div>
+            )}
           </div>
         )}
 
         {isOpen && !loading && suggestions.length === 0 && searchText && (
           <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800 border border-slate-600 rounded-lg shadow-lg z-50 p-2">
-            <div className="text-slate-400">No locations found</div>
+            {onAddLocation ? (
+              <div
+                className="p-3 cursor-pointer hover:bg-slate-700"
+                onClick={onAddLocation}
+              >
+                <div className="font-medium text-green-400">➕ Add New Location</div>
+                <div className="text-xs text-slate-400">Create "{searchText}" as new location</div>
+              </div>
+            ) : (
+              <div className="text-slate-400">No locations found</div>
+            )}
           </div>
         )}
       </div>
