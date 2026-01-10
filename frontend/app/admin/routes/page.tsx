@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAllAdminRoutes, deleteRoute, approveRoute, rejectRoute } from '@/lib/api';
+import { getAllAdminRoutes, deleteRoute, approveRoute, rejectRoute, setAuthToken } from '@/lib/api';
 import { useAdminStore } from '@/stores/adminStore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -45,6 +45,13 @@ export default function AdminRoutesPage() {
     const fetchRoutes = async () => {
       try {
         setLoading(true);
+        
+        // Set authentication token
+        const adminToken = localStorage.getItem('admin_token');
+        if (adminToken) {
+          setAuthToken(adminToken);
+        }
+        
         const response = await getAllAdminRoutes();
         setRoutes(response.data.routes);
       } catch (err) {
@@ -65,6 +72,13 @@ export default function AdminRoutesPage() {
 
     try {
       setDeleteLoading(routeId);
+      
+      // Set authentication token
+      const adminToken = localStorage.getItem('admin_token');
+      if (adminToken) {
+        setAuthToken(adminToken);
+      }
+      
       const response = await deleteRoute(routeId);
       setRoutes(routes.filter(route => route.id !== routeId));
       console.log('Route deleted successfully');
@@ -83,6 +97,13 @@ export default function AdminRoutesPage() {
 
     try {
       setApproveLoading(routeId);
+      
+      // Set authentication token
+      const adminToken = localStorage.getItem('admin_token');
+      if (adminToken) {
+        setAuthToken(adminToken);
+      }
+      
       const response = await approveRoute(routeId);
       setRoutes(routes.map(route => 
         route.id === routeId 
@@ -105,6 +126,13 @@ export default function AdminRoutesPage() {
 
     try {
       setRejectLoading(routeId);
+      
+      // Set authentication token
+      const adminToken = localStorage.getItem('admin_token');
+      if (adminToken) {
+        setAuthToken(adminToken);
+      }
+      
       const response = await rejectRoute(routeId);
       setRoutes(routes.map(route => 
         route.id === routeId 
