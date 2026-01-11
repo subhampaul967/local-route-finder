@@ -18,19 +18,17 @@ A community-sourced local transport wiki for shared autos and private buses in I
 5. Run database migrations: `npm run prisma:migrate --workspace backend`
 6. Start development servers: `npm run dev`
 
-## Deployment Options
+## Deployment
 
-### Option 1: Railway (Recommended)
+### Vercel + Render
 1. Push code to GitHub
-2. Connect repository to Railway
-3. Set environment variables in Railway dashboard
-4. Railway will automatically build and deploy
-
-### Option 2: Vercel + Railway
+2. Connect repository to vercel and render
+3. Set environment variables in Render dashboard
+4. Render will automatically build and deploy
 - Frontend on Vercel
-- Backend on Railway
+- Backend on Render
 
-### Option 3: Traditional VPS
+### Other Option : Traditional VPS
 1. Set up server with Node.js, PostgreSQL
 2. Clone repository
 3. Install dependencies
