@@ -57,25 +57,8 @@ export default function HomePage() {
 
   return (
     <SimpleAppShell>
-      {/* City Selection - Full Width at Top */}
-      <Card className="p-6 bg-slate-900/60 mb-4">
-        <div className="text-center mb-4">
-          <h2 className="text-xl font-semibold text-brand-foreground mb-2">
-            🏙️ Select Your City
-          </h2>
-          <p className="text-sm text-slate-400">
-            Choose your city to find available routes
-          </p>
-        </div>
-        <CitySelector 
-          currentCity={selectedCity} 
-          onCityChange={handleCityChange}
-        />
-      </Card>
-
-      {/* Main Content - Full Width Below City Selection */}
-      {selectedCity && (
-        <Card className="p-6 bg-slate-900/60 mb-4">
+      <main className="mx-auto flex max-w-sm flex-1 flex-col gap-4 px-4 py-6">
+        <Card className="p-6 bg-slate-900/60">
           <div className="mb-4 text-center">
             <h1 className="text-2xl font-semibold text-brand-foreground">
               Local Bus / Shared Auto Finder
@@ -85,97 +68,110 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Show search form only when city is selected */}
-          <SearchForm
-            from={from}
-            to={to}
-            onChangeFrom={setFrom}
-            onChangeTo={setTo}
-            onSubmit={handleSubmit}
-            showSubmitButton
-          />
-        </Card>
-      )}
-
-      {/* Show message when no city is selected */}
-      {!selectedCity && (
-        <Card className="p-6 bg-slate-900/60 mb-4">
-          <div className="text-center py-8">
-            <p className="text-slate-400 text-lg">
-              📍 Please select a city above to search for routes
-            </p>
+          {/* City Selection - Below Heading */}
+          <div className="mb-4">
+            <div className="text-center mb-4">
+              <h2 className="text-lg font-semibold text-brand-foreground mb-2">
+                🏙️ Select Your City
+              </h2>
+              <p className="text-sm text-slate-400">
+                Choose your city to find available routes
+              </p>
+            </div>
+            <CitySelector 
+              currentCity={selectedCity} 
+              onCityChange={handleCityChange}
+            />
           </div>
+
+          {/* Show search form only when city is selected */}
+          {selectedCity ? (
+            <SearchForm
+              from={from}
+              to={to}
+              onChangeFrom={setFrom}
+              onChangeTo={setTo}
+              onSubmit={handleSubmit}
+              showSubmitButton
+            />
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-slate-400 text-lg">
+                📍 Please select a city above to search for routes
+              </p>
+            </div>
+          )}
         </Card>
-      )}
 
       {/* Admin Menu */}
-      <div className="relative">
-        <div className="text-center">
-          <Button 
-            variant="outline" 
-            onClick={() => setShowAdminMenu(!showAdminMenu)}
-            className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
-          >
-            ⚙️ More Options
-          </Button>
-        </div>
-        
-        {showAdminMenu && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-50">
-            <div className="p-2 space-y-1">
-              <Link href="/add-route">
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start text-green-400 hover:bg-green-500/10"
-                >
-                  ➕ Add Route
-                </Button>
-              </Link>
-              {isAdmin() ? (
-                <>
-                  <Link href="/admin/routes">
+        <div className="relative">
+          <div className="text-center">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowAdminMenu(!showAdminMenu)}
+              className="border-purple-500 text-purple-400 hover:bg-purple-500/10"
+            >
+              ⚙️ More Options
+            </Button>
+          </div>
+          
+          {showAdminMenu && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-50">
+              <div className="p-2 space-y-1">
+                <Link href="/add-route">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start text-green-400 hover:bg-green-500/10"
+                  >
+                    ➕ Add Route
+                  </Button>
+                </Link>
+                {isAdmin() ? (
+                  <>
+                    <Link href="/admin/routes">
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start text-purple-400 hover:bg-purple-500/10"
+                      >
+                        🛠️ Admin Dashboard
+                      </Button>
+                    </Link>
+                    <Button 
+                      variant="ghost" 
+                      onClick={logout}
+                      className="w-full justify-start text-red-400 hover:bg-red-500/10"
+                    >
+                      🚪 Logout Admin
+                    </Button>
+                  </>
+                ) : (
+                  <Link href="/admin/login">
                     <Button 
                       variant="ghost" 
                       className="w-full justify-start text-purple-400 hover:bg-purple-500/10"
                     >
-                      🛠️ Admin Dashboard
+                      🔐 Admin Login
                     </Button>
                   </Link>
-                  <Button 
-                    variant="ghost" 
-                    onClick={logout}
-                    className="w-full justify-start text-red-400 hover:bg-red-500/10"
-                  >
-                    🚪 Logout Admin
-                  </Button>
-                </>
-              ) : (
-                <Link href="/admin/login">
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-start text-purple-400 hover:bg-purple-500/10"
-                  >
-                    🔐 Admin Login
-                  </Button>
-                </Link>
-              )}
+                )}
+              </div>
             </div>
+          )}
+        </div>
+
+        {/* View All Routes Button - Only when city is selected */}
+        {selectedCity && (
+          <div className="text-center">
+            <Button 
+              variant="outline" 
+              onClick={handleViewAllRoutes}
+              className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
+            >
+              🚌 View All Routes in {selectedCity}
+            </Button>
           </div>
         )}
-      </div>
-
-      {/* View All Routes Button - Only when city is selected */}
-      {selectedCity && (
-        <div className="text-center">
-          <Button 
-            variant="outline" 
-            onClick={handleViewAllRoutes}
-            className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
-          >
-            🚌 View All Routes in {selectedCity}
-          </Button>
-        </div>
-      )}
+      </main>
     </SimpleAppShell>
   );
 }
