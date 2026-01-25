@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import type { RouteDTO } from "@/types";
+import type { RouteDTO } from "../../types";
 import { useAdminStore } from "@/stores/adminStore";
 import { fetchPendingRoutes, approveRoute, rejectRoute, upsertFare } from "@/lib/api";
 import { Card } from "@/components/ui/card";

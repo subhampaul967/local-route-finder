@@ -1,6 +1,6 @@
 'use client';
 
-import type { RouteDTO } from "@/types";
+import type { RouteDTO } from "../../types";
 import { Card } from "@/components/ui/card";
 
 interface Props {

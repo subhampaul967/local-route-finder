@@ -1,4 +1,4 @@
-import type { RouteDTO } from "@/types";
+import type { RouteDTO } from "../types";
 
 const CACHE_KEY = "route-search-cache-v1";
 

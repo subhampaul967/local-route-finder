@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import type { RouteDTO } from "@/types";
+import type { RouteDTO } from "../../types";
 
 interface Props {
   routes: RouteDTO[];

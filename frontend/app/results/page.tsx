@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import type { RouteDTO } from "@/types";
+import type { RouteDTO } from "../../types";
 import { searchRoutes } from "@/lib/api";
 import { saveSearchToCache, getCachedSearch } from "@/lib/searchCache";
 import { RouteCard } from "@/components/routes/RouteCard";
