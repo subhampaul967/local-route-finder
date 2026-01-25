@@ -5,7 +5,7 @@ import { normalizePlaceName } from '../services/ai/placeNormalization';
 
 const router = Router();
 
-// GET all locations
+// GET all locations with city information
 router.get('/', async (req: any, res: any, next: any) => {
   try {
     const locations = await prisma.location.findMany({
@@ -21,7 +21,13 @@ router.get('/', async (req: any, res: any, next: any) => {
       },
     });
 
-    return res.json({ locations });
+    // Add city information to locations (based on known city mappings)
+    const locationsWithCity = locations.map(location => ({
+      ...location,
+      city: getCityFromLocation(location.name)
+    }));
+
+    return res.json({ locations: locationsWithCity });
   } catch (err: any) {
     console.error('Get locations error:', err);
     return res.status(500).json({ 
@@ -30,6 +36,36 @@ router.get('/', async (req: any, res: any, next: any) => {
     });
   }
 });
+
+// Helper function to determine city from location name
+function getCityFromLocation(locationName: string): string {
+  const name = locationName.toLowerCase();
+  
+  // Durgapur locations
+  if (name.includes('bengal college') || name.includes('prantika') || 
+      name.includes('railway station') || name.includes('durgapur') ||
+      name.includes('bidhannagar') || name.includes('benachity') ||
+      name.includes('city centre') || name.includes('fuljhore')) {
+    return 'Durgapur';
+  }
+  
+  // Pune locations
+  if (name.includes('pune') || name.includes('shivaji') || 
+      name.includes('koregaon') || name.includes('camp') ||
+      name.includes('swargate') || name.includes('katraj')) {
+    return 'Pune';
+  }
+  
+  // Kolkata locations
+  if (name.includes('kolkata') || name.includes('howrah') || 
+      name.includes('salt lake') || name.includes('park street') ||
+      name.includes('newtown') || name.includes('garia')) {
+    return 'Kolkata';
+  }
+  
+  // Default to unknown
+  return 'Unknown';
+}
 
 // Location search endpoint for autocomplete
 router.get('/search', async (req: any, res: any, next: any) => {

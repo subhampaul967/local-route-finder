@@ -43,14 +43,61 @@ exports.routesRouter.get("/admin/all", auth_1.authenticate, auth_1.requireAdmin,
         });
     }
 });
-// GET /city - get all routes (simplified for now)
+// GET /city - get routes in selected city
 exports.routesRouter.get("/city", async (req, res, next) => {
     try {
-        // Get city from query parameter (for future use)
+        // Get city from query parameter
         const city = req.query.city || "Kolkata";
-        // Get all approved routes (simplified approach for now)
+        // Get all locations
+        const allLocations = await prisma_1.prisma.location.findMany({
+            select: {
+                id: true,
+                name: true,
+            },
+        });
+        // Filter locations by city using the same logic as locationRoutes
+        const cityLocations = allLocations.filter(location => {
+            const name = location.name.toLowerCase();
+            // Durgapur locations
+            if (city.toLowerCase() === 'durgapur') {
+                return name.includes('bengal college') || name.includes('prantika') ||
+                    name.includes('railway station') || name.includes('durgapur') ||
+                    name.includes('bidhannagar') || name.includes('benachity') ||
+                    name.includes('city centre') || name.includes('fuljhore');
+            }
+            // Pune locations
+            if (city.toLowerCase() === 'pune') {
+                return name.includes('pune') || name.includes('shivaji') ||
+                    name.includes('koregaon') || name.includes('camp') ||
+                    name.includes('swargate') || name.includes('katraj');
+            }
+            // Kolkata locations
+            if (city.toLowerCase() === 'kolkata') {
+                return name.includes('kolkata') || name.includes('howrah') ||
+                    name.includes('salt lake') || name.includes('park street') ||
+                    name.includes('newtown') || name.includes('garia');
+            }
+            return false;
+        });
+        if (!cityLocations.length) {
+            return res.json({
+                routes: [],
+                city,
+                message: `No locations found for ${city}. Try selecting a different city or adding locations for ${city}.`
+            });
+        }
+        const locationIds = cityLocations.map((l) => l.id);
+        // Get all routes (both from and to locations in the city)
         const routes = (await prisma_1.prisma.route.findMany({
             where: {
+                OR: [
+                    {
+                        fromLocationId: { in: locationIds },
+                    },
+                    {
+                        toLocationId: { in: locationIds },
+                    },
+                ],
                 status: "APPROVED",
             },
             include: {
