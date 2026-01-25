@@ -24,7 +24,7 @@ export default function AdminLoginPage() {
     try {
       console.log('🔐 Attempting admin login...');
       
-      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://local-route-finder-backend.onrender.com';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://local-route-finder-3.onrender.com';
       console.log('🔍 API URL:', apiUrl);
       
       // First test if backend is reachable
