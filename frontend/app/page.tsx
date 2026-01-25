@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CitySelector } from "@/components/CitySelector";
 import { useAdminStore } from "@/stores/adminStore";
+import { DemoRoutes } from "@/components/demo/DemoRoutes";
 import Link from "next/link";
 import { SimpleAppShell } from "@/components/layout/SimpleAppShell";
 
@@ -34,6 +35,12 @@ export default function HomePage() {
 
   const handleCityChange = (city: string) => {
     setSelectedCity(city);
+  };
+
+  // Handle demo route selection
+  const handleDemoRouteSelect = (demoFrom: string, demoTo: string) => {
+    setFrom(demoFrom);
+    setTo(demoTo);
   };
 
   // Simple client-side validation before navigating to results page.
@@ -86,14 +93,21 @@ export default function HomePage() {
 
           {/* Show search form only when city is selected */}
           {selectedCity ? (
-            <SearchForm
-              from={from}
-              to={to}
-              onChangeFrom={setFrom}
-              onChangeTo={setTo}
-              onSubmit={handleSubmit}
-              showSubmitButton
-            />
+            <>
+              <SearchForm
+                from={from}
+                to={to}
+                onChangeFrom={setFrom}
+                onChangeTo={setTo}
+                onSubmit={handleSubmit}
+                showSubmitButton
+              />
+              
+              {/* Demo Routes Section */}
+              <div className="mt-4">
+                <DemoRoutes onSelectRoute={handleDemoRouteSelect} />
+              </div>
+            </>
           ) : (
             <div className="text-center py-8">
               <p className="text-slate-400 text-lg">
