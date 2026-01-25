@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import type { RouteDTO } from "@local/shared";
+import type { RouteDTO } from "@/types";
 
 // @ts-ignore
 declare global {

@@ -1,4 +1,4 @@
-import type { RouteDTO } from "@local/shared";
+import type { RouteDTO } from "@/types";
 
 const CACHE_KEY = "route-search-cache-v1";
 

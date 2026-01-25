@@ -2,7 +2,7 @@
 
 import { MapContainer, TileLayer, Polyline, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-import type { RouteDTO } from "@local/shared";
+import type { RouteDTO } from "@/types";
 import "leaflet/dist/leaflet.css";
 
 // Fix default icon URLs for Leaflet in Next.js environment.

@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { CitySelector } from '@/components/CitySelector';
-import type { RouteDTO } from "@local/shared";
+import type { RouteDTO } from "@/types";
 
 // Dynamic import with SSR disabled
 const GoogleRouteMap = dynamic(
