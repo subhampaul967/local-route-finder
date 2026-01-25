@@ -55,41 +55,17 @@ routesRouter.get(
   }
 );
 
-// GET /city - get all routes in selected city
+// GET /city - get all routes (simplified for now)
 routesRouter.get(
   "/city",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Get city from query parameter (default to Kolkata if not provided)
+      // Get city from query parameter (for future use)
       const city = (req.query.city as string) || "Kolkata";
 
-      // Find locations in the selected city
-      const cityLocations = await prisma.location.findMany({
-        where: {
-          name: {
-            contains: city,
-            mode: "insensitive",
-          },
-        },
-      });
-
-      if (!cityLocations.length) {
-        return res.json({ routes: [], city, message: `No locations found for ${city}` });
-      }
-
-      const locationIds = cityLocations.map((l: any) => l.id);
-
-      // Get all routes (both from and to locations in the city)
+      // Get all approved routes (simplified approach for now)
       const routes = (await prisma.route.findMany({
         where: {
-          OR: [
-            {
-              fromLocationId: { in: locationIds },
-            },
-            {
-              toLocationId: { in: locationIds },
-            },
-          ],
           status: "APPROVED",
         },
         include: {

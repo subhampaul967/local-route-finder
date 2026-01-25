@@ -43,35 +43,14 @@ exports.routesRouter.get("/admin/all", auth_1.authenticate, auth_1.requireAdmin,
         });
     }
 });
-// GET /city - get all routes in selected city
+// GET /city - get all routes (simplified for now)
 exports.routesRouter.get("/city", async (req, res, next) => {
     try {
-        // Get city from query parameter (default to Kolkata if not provided)
+        // Get city from query parameter (for future use)
         const city = req.query.city || "Kolkata";
-        // Find locations in the selected city
-        const cityLocations = await prisma_1.prisma.location.findMany({
-            where: {
-                name: {
-                    contains: city,
-                    mode: "insensitive",
-                },
-            },
-        });
-        if (!cityLocations.length) {
-            return res.json({ routes: [], city, message: `No locations found for ${city}` });
-        }
-        const locationIds = cityLocations.map((l) => l.id);
-        // Get all routes (both from and to locations in the city)
+        // Get all approved routes (simplified approach for now)
         const routes = (await prisma_1.prisma.route.findMany({
             where: {
-                OR: [
-                    {
-                        fromLocationId: { in: locationIds },
-                    },
-                    {
-                        toLocationId: { in: locationIds },
-                    },
-                ],
                 status: "APPROVED",
             },
             include: {

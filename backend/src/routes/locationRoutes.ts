@@ -5,6 +5,32 @@ import { normalizePlaceName } from '../services/ai/placeNormalization';
 
 const router = Router();
 
+// GET all locations
+router.get('/', async (req: any, res: any, next: any) => {
+  try {
+    const locations = await prisma.location.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        lat: true,
+        lng: true,
+      },
+    });
+
+    return res.json({ locations });
+  } catch (err: any) {
+    console.error('Get locations error:', err);
+    return res.status(500).json({ 
+      error: "Failed to fetch locations",
+      details: process.env.NODE_ENV === 'development' ? err.message : "Internal server error"
+    });
+  }
+});
+
 // Location search endpoint for autocomplete
 router.get('/search', async (req: any, res: any, next: any) => {
   try {
