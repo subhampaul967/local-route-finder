@@ -22,7 +22,13 @@ app.use(helmet());
 const corsOptions =
   env.nodeEnv === "development"
     ? { origin: true, credentials: true }
-    : { origin: env.corsOrigin, credentials: true };
+    : { 
+        origin: [
+          "https://local-route-finder-frontend-fq6x.vercel.app",
+          "https://local-route-finder-frontend-subhampaul967s-projects.vercel.app"
+        ], 
+        credentials: true 
+      };
 
 app.use(cors(corsOptions));
 

@@ -25,7 +25,13 @@ app.use((0, helmet_1.default)());
 // (Next.js may run on 3000/3001/3002). In production, use configured origin.
 const corsOptions = env_1.env.nodeEnv === "development"
     ? { origin: true, credentials: true }
-    : { origin: env_1.env.corsOrigin, credentials: true };
+    : {
+        origin: [
+            "https://local-route-finder-frontend-fq6x.vercel.app",
+            "https://local-route-finder-frontend-subhampaul967s-projects.vercel.app"
+        ],
+        credentials: true
+    };
 app.use((0, cors_1.default)(corsOptions));
 // Logging
 app.use((0, morgan_1.default)(env_1.env.nodeEnv === "development" ? "dev" : "combined"));

@@ -24,5 +24,5 @@ exports.env = {
     // For development, allow the request origin to be reflected so credentials
     // and varying frontend dev ports (3000/3001/3002) work correctly.
     // `true` tells the `cors` middleware to reflect the request origin.
-    corsOrigin: process.env.CORS_ORIGIN ?? (process.env.NODE_ENV === "development" ? true : "http://localhost:3000"),
+    corsOrigin: process.env.CORS_ORIGIN ?? (process.env.NODE_ENV === "development" ? true : "https://local-route-finder-frontend-fq6x.vercel.app"),
 };
